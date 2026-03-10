@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 
 export function Biz() {
   return (
-    <section className="relative py-28 bg-black border-t border-white/10 text-white overflow-hidden">
+    <section className="relative py-28 bg-black border-white/10 text-white overflow-hidden">
 
       {/* Background layer (replace with image later) */}
       <motion.div

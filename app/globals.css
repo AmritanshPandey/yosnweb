@@ -144,3 +144,10 @@
 p {
   color: white;
 }
+
+
+@keyframes zoomHero {
+  0% { transform: scale(1.05); }
+  50% { transform: scale(1.12); }
+  100% { transform: scale(1.05); }
+}

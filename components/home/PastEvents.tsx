@@ -1,23 +1,15 @@
 "use client"
 
 import { Reveal } from "@/components/shared/Reveal"
-import { motion } from "framer-motion"
 
-const colors = [
-  "bg-indigo-600/40",
-  "bg-emerald-600/40",
-  "bg-rose-600/40",
-  "bg-amber-500/40",
-  "bg-cyan-600/40",
-  "bg-purple-600/40",
-  "bg-pink-600/40",
-  "bg-blue-600/40",
-]
+const events = Array.from({ length: 34 }, (_, i) => ({
+  src: `/assets/events/event${i + 1}.jpg`,
+}))
 
 export function PastEvents() {
   return (
-    <section className="py-28 bg-black border-t border-white/10 text-white">
-      <div className="container mx-auto px-6">
+    <section className="py-24 bg-black text-white" id="events">
+      <div className="max-w-7xl mx-auto px-6">
 
         <Reveal>
           <h2 className="text-4xl font-bold mb-12">
@@ -25,17 +17,26 @@ export function PastEvents() {
           </h2>
         </Reveal>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {colors.map((color, i) => (
-            <Reveal key={i} delay={i * 0.08}>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                className={`aspect-square rounded-lg ${color} flex items-center justify-center text-white font-medium`}
-              >
-                Event
-              </motion.div>
+        {/* Masonry Grid */}
+        <div className="columns-2 md:columns-4 gap-6 space-y-6">
+
+          {events.map((event, i) => (
+            <Reveal key={i} delay={i * 0.03}>
+              <div className="relative overflow-hidden rounded-xl group mb-6 break-inside-avoid border border-white/10">
+
+                <img
+                  src={event.src}
+                  alt={`Event ${i + 1}`}
+                  className="w-full h-auto object-cover group-hover:scale-105 transition duration-500"
+                />
+
+                {/* Subtle overlay */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition duration-300" />
+
+              </div>
             </Reveal>
           ))}
+
         </div>
 
       </div>

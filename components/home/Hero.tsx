@@ -1,61 +1,34 @@
 "use client"
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel"
-import Autoplay from "embla-carousel-autoplay"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { motion } from "framer-motion"
-
-const slides = [
-  { title: "UPCOMING EVENTS", desc: "Experience curated entertainment." },
-  { title: "LIVE ARTISTS", desc: "Discover top performers." },
-  { title: "BIZ AT YOSN", desc: "Partner for brand experiences." },
-]
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 export function Hero() {
   return (
-    <section className="relative h-[60svh] md:h-[70vh] bg-black text-white flex items-center overflow-hidden">
+    <section className="relative h-[75vh] text-white overflow-hidden">
 
-      <Carousel
-        opts={{ loop: true }}
-        plugins={[Autoplay({ delay: 5000 })]}
-        className="w-full"
+      {/* Background Video */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster="/assets/banners/banner.png"
+        className="absolute inset-0 w-full h-full object-cover scale-105 animate-[zoomHero_18s_linear_infinite]"
       >
-        <CarouselContent>
-          {slides.map((slide, i) => (
-            <CarouselItem key={i}>
-              <div className="relative h-[60svh] md:h-[70vh] flex items-center justify-center">
+        <source src="/assets/banners/banner.webm" type="video/webm" />
+        <source src="/assets/banners/banner.mp4" type="video/mp4" />
+      </video>
 
-                <motion.div
-                  initial={{ scale: 1.05 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 6 }}
-                  className="absolute inset-0 bg-gradient-to-br from-indigo-700/40 via-purple-700/30 to-black"
-                />
+      Cinematic Gradient Overlay
+      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
 
-                <div className="relative text-center max-w-2xl px-6">
-                  <Badge className="mb-4">YOSN</Badge>
+      {/* Soft Edge Vignette
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent,black_80%)]" /> */}
 
-                  <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4">
-                    {slide.title}
-                  </h1>
-
-                  <p className="text-white/70 mb-6">
-                    {slide.desc}
-                  </p>
-
-                  <Button size="lg">Explore</Button>
-                </div>
-
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-      </Carousel>
+  
 
     </section>
   )
