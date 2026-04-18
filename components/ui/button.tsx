@@ -4,29 +4,29 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2AAFFB] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
         // Default dark button
         default:
-          "rounded-md bg-white text-black hover:bg-white/90",
+          "rounded-md bg-gradient-to-r from-cyan-300 to-fuchsia-300 text-black shadow-[0_8px_24px_rgba(49,212,255,0.3)] hover:from-fuchsia-300 hover:to-amber-200",
 
         // Premium Capsule (Primary Highlight)
         capsule:
-          "rounded-full bg-[#2AAFFB] text-black shadow-[0_0_20px_rgba(42,175,251,0.35)] hover:bg-[#1e96d8] hover:shadow-[0_0_25px_rgba(42,175,251,0.6)] hover:scale-[1.04] active:scale-95",
+          "rounded-full bg-gradient-to-r from-cyan-300 to-fuchsia-300 text-black shadow-[0_0_24px_rgba(49,212,255,0.35)] hover:from-fuchsia-300 hover:to-amber-200 hover:shadow-[0_0_30px_rgba(255,79,216,0.5)] hover:scale-[1.04] active:scale-95",
 
         // Outline Capsule (Elegant Secondary CTA)
         "capsule-outline":
-          "rounded-full border border-[#2AAFFB] text-[#2AAFFB] bg-transparent hover:bg-[#2AAFFB] hover:text-black hover:shadow-[0_0_20px_rgba(42,175,251,0.4)]",
+          "rounded-full border border-cyan-300 text-cyan-200 bg-transparent hover:bg-gradient-to-r hover:from-cyan-300 hover:to-fuchsia-300 hover:text-black hover:shadow-[0_0_24px_rgba(49,212,255,0.4)]",
 
         // Ghost minimal
         ghost:
-          "rounded-md text-white hover:bg-white/10",
+          "rounded-md text-white hover:bg-white/10 hover:text-cyan-200",
 
         // Link style
         link:
-          "text-[#2AAFFB] underline-offset-4 hover:underline",
+          "text-cyan-200 underline-offset-4 hover:underline hover:text-fuchsia-200",
       },
 
       size: {

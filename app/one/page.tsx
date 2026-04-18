@@ -17,10 +17,10 @@ const gallery = Array.from({ length: 12 }, (_, i) => ({
 
 export default function Page() {
   return (
-    <main className="bg-black text-white">
+    <main className="bg-black text-white pt-20 sm:pt-24 page-fun">
 
       {/* HERO */}
-      <section className="relative h-screen overflow-hidden">
+      <section className="relative h-[calc(100vh-5rem)] overflow-hidden sm:h-[calc(100vh-6rem)]">
 
         <video
           autoPlay
@@ -36,7 +36,9 @@ export default function Page() {
         </video>
 
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/70" />
+        <div className="absolute inset-0 bg-black/42" />
+        <div className="absolute -left-16 top-6 h-56 w-56 rounded-full bg-cyan-400/18 blur-3xl" />
+        <div className="absolute -right-14 bottom-10 h-60 w-60 rounded-full bg-fuchsia-500/18 blur-3xl" />
 
         {/* Hero Content */}
         <div className="relative z-10 h-full flex items-center justify-center px-6">
@@ -73,7 +75,7 @@ export default function Page() {
                 visible: { opacity: 1, y: 0 },
               }}
               transition={{ duration: 0.8 }}
-              className="text-white/70 text-lg md:text-xl leading-relaxed"
+              className="body-fun text-base leading-relaxed md:text-xl"
             >
               A signature live entertainment experience curated by
               YOSN Innovations — bringing together music, culture,
@@ -107,18 +109,18 @@ export default function Page() {
 
 
       {/* ABOUT */}
-      <section className="py-32">
+      <section className="py-20 sm:py-32">
 
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
           <Reveal>
-            <div className="text-center max-w-3xl mx-auto mb-24">
+            <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
 
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <h2 className="heading-fun text-4xl sm:text-5xl md:text-7xl">
                 About One Night
               </h2>
 
-              <p className="text-white/60 text-lg leading-relaxed">
+              <p className="body-fun mt-4 leading-relaxed">
                 One Night is a signature live entertainment experience curated
                 by YOSN Innovations, bringing together music, culture, and
                 unforgettable performances for an electrifying evening that
@@ -130,16 +132,16 @@ export default function Page() {
 
 
           {/* EVENT DETAILS */}
-          <div className="grid md:grid-cols-2 gap-20 mb-32">
+          <div className="grid gap-12 mb-20 sm:gap-20 md:grid-cols-2 sm:mb-32">
 
             <Reveal>
               <div>
 
-                <h3 className="text-3xl font-semibold mb-8">
+                <h3 className="heading-fun text-3xl sm:text-4xl">
                   Event Details
                 </h3>
 
-                <div className="space-y-5 text-white/70 text-lg">
+                <div className="body-fun mt-6 space-y-4 sm:mt-8 sm:space-y-5 sm:text-base">
 
                   <p>
                     <span className="text-white font-medium">Date:</span>
@@ -170,18 +172,18 @@ export default function Page() {
             <Reveal delay={0.15}>
               <div>
 
-                <h3 className="text-3xl font-semibold mb-8">
+                <h3 className="heading-fun text-3xl sm:text-4xl">
                   About the Event
                 </h3>
 
-                <p className="text-white/70 leading-relaxed mb-6">
+                <p className="body-fun mt-6 leading-relaxed sm:mt-8">
                   Designed as a high-energy celebration of music and
                   entertainment, One Night creates a space where audiences
                   experience incredible performances, immersive production,
                   and an atmosphere that celebrates live culture.
                 </p>
 
-                <p className="text-white/70 leading-relaxed">
+                <p className="body-fun mt-4 leading-relaxed">
                   With world-class artists, engaging storytelling, and
                   unforgettable stage experiences, One Night delivers a
                   powerful entertainment experience crafted for
@@ -197,31 +199,31 @@ export default function Page() {
 
           {/* ARTIST LINEUP */}
           <Reveal>
-            <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center">
+            <h2 className="heading-fun mb-10 text-center text-4xl sm:mb-16 sm:text-5xl md:text-7xl">
               Artist Lineup
             </h2>
           </Reveal>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 mb-32">
+          <div className="grid grid-cols-2 gap-3 mb-20 sm:grid-cols-3 sm:gap-6 md:grid-cols-3 lg:grid-cols-5 sm:mb-32">
 
             {artists.map((artist, i) => (
               <Reveal key={i} delay={i * 0.1}>
 
                 <motion.div
                   whileHover={{ y: -6 }}
-                  className="relative rounded-xl overflow-hidden border border-white/10 group"
+                  className="fun-card relative overflow-hidden rounded-xl group"
                 >
 
                   <img
                     src={artist.img}
                     alt={artist.name}
-                    className="w-full h-[280px] object-cover group-hover:scale-105 transition duration-500"
+                    className="w-full h-[240px] object-cover transition-all duration-500 group-hover:scale-105 sm:h-[280px]"
                   />
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
 
-                  <div className="absolute bottom-4 left-4">
-                    <p className="font-semibold">
+                  <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4">
+                    <p className="heading-fun text-base tracking-wide sm:text-lg">
                       {artist.name}
                     </p>
                   </div>
@@ -237,19 +239,19 @@ export default function Page() {
 
           {/* EVENT GALLERY */}
           <Reveal>
-            <h2 className="text-4xl md:text-5xl font-bold mb-16 text-center">
+            <h2 className="heading-fun mb-10 text-center text-4xl sm:mb-16 sm:text-5xl md:text-7xl">
               Event Gallery
             </h2>
           </Reveal>
 
-          <div className="columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+          <div className="columns-2 gap-3 space-y-3 sm:gap-6 sm:space-y-6 md:columns-3 lg:columns-4">
 
             {gallery.map((img, i) => (
               <Reveal key={i} delay={i * 0.03}>
 
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="relative overflow-hidden rounded-xl border border-white/10 break-inside-avoid"
+                  className="fun-card relative overflow-hidden rounded-xl break-inside-avoid"
                 >
 
                   <img

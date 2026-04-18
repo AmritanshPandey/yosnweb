@@ -9,6 +9,7 @@ import {
   IconCalendarEvent,
   IconMicrophone,
   IconBrandStripe,
+  IconMapPin,
   IconMusic,
   IconMoodSmile,
   IconSparkles,
@@ -42,6 +43,39 @@ const services = [
   },
 ]
 
+const venueGroups = [
+  {
+    city: "Mumbai",
+    region: "India",
+    venues: ["NMACC", "NSCI Dome", "NCPA", "Shanmukhanada Auditorium"],
+  },
+  {
+    city: "Delhi",
+    region: "India",
+    venues: ["Bharat Mandapam", "Yashobhoomi Convention Centre"],
+  },
+  {
+    city: "London",
+    region: "UK",
+    venues: ["Royal Festival Hall"],
+  },
+  {
+    city: "Manchester",
+    region: "UK",
+    venues: ["The Lowry"],
+  },
+  {
+    city: "Birmingham",
+    region: "UK",
+    venues: ["Symphony Hall"],
+  },
+  {
+    city: "Dubai",
+    region: "UAE",
+    venues: [],
+  },
+]
+
 function Counter({ value }: { value: number }) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true })
@@ -65,8 +99,7 @@ function Counter({ value }: { value: number }) {
   return (
     <span
       ref={ref}
-      className="text-[#2AAFFB]"
-      style={{ textShadow: "0 0 14px rgba(42,175,251,0.6)" }}
+      className="text-white"
     >
       {display}+
     </span>
@@ -75,18 +108,21 @@ function Counter({ value }: { value: number }) {
 
 export default function Page() {
   return (
-    <section className="bg-black text-white py-32">
+    <section className="bg-black text-white py-24 sm:py-32 page-fun">
 
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* HERO */}
         <Reveal>
-          <div className="mb-20">
-            <h1 className="text-5xl md:text-6xl font-bold mb-6">
-              About us
+          <div className="mb-16 sm:mb-20">
+            <p className="eyebrow-fun mb-4 sm:mb-6">
+              Who We Are
+            </p>
+            <h1 className="heading-fun text-5xl sm:text-6xl md:text-8xl">
+              About Us
             </h1>
 
-            <p className="text-white/60 text-xl leading-relaxed">
+            <p className="body-fun mt-4 max-w-2xl leading-relaxed sm:text-base">
               YOSN Innovations is an experiential entertainment company
               dedicated to creating unforgettable live experiences.
               From concerts and comedy tours to large-scale brand
@@ -97,7 +133,7 @@ export default function Page() {
         </Reveal>
 
         {/* STATS */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-28">
+        <div className="grid grid-cols-2 gap-4 mb-20 sm:gap-6 md:grid-cols-4 md:gap-10 sm:mb-28">
 
           {stats.map((stat, i) => {
             const Icon = stat.icon
@@ -106,15 +142,15 @@ export default function Page() {
               <Reveal key={i} delay={i * 0.1}>
                 <motion.div
                   whileHover={{ y: -4 }}
-                  className="p-8 rounded-xl border border-white/10 bg-white/5"
+                  className="fun-card p-5 sm:p-8"
                 >
-                  <Icon size={32} className="text-[#2AAFFB] mb-4" />
+                  <Icon size={28} className="mb-3 text-cyan-200/75 sm:mb-4 sm:size-8" />
 
-                  <h3 className="text-4xl font-bold mb-1">
+                  <h3 className="font-display text-4xl leading-none text-white sm:text-5xl">
                     <Counter value={stat.value} />
                   </h3>
 
-                  <p className="text-white/60 text-sm">
+                  <p className="mt-2 text-xs uppercase tracking-widest text-white/60">
                     {stat.label}
                   </p>
 
@@ -127,12 +163,12 @@ export default function Page() {
 
         {/* WHAT WE DO */}
         <Reveal>
-          <h2 className="text-4xl font-bold mb-14">
+          <h2 className="heading-fun mb-10 text-4xl sm:mb-14 sm:text-5xl md:text-7xl">
             What We Do
           </h2>
         </Reveal>
 
-        <div className="grid md:grid-cols-3 gap-10 mb-28">
+        <div className="grid gap-6 mb-20 sm:gap-10 md:grid-cols-3 sm:mb-28">
 
           {services.map((service, i) => {
             const Icon = service.icon
@@ -141,16 +177,16 @@ export default function Page() {
               <Reveal key={i} delay={i * 0.1}>
                 <motion.div
                   whileHover={{ y: -6 }}
-                  className="p-10 bg-white/5 border border-white/10 rounded-xl"
+                  className="fun-card p-8 sm:p-10"
                 >
 
-                  <Icon size={36} className="text-[#2AAFFB] mb-6" />
+                  <Icon size={32} className="mb-5 text-fuchsia-200/75 sm:mb-6 sm:size-9" />
 
-                  <h3 className="text-xl font-semibold mb-3">
+                  <h3 className="heading-fun text-2xl tracking-wide sm:text-3xl">
                     {service.title}
                   </h3>
 
-                  <p className="text-white/60 leading-relaxed">
+                  <p className="body-fun mt-3 leading-relaxed">
                     {service.description}
                   </p>
 
@@ -161,15 +197,86 @@ export default function Page() {
 
         </div>
 
+        {/* VENUES */}
+        <div className="relative mb-20 overflow-hidden border border-white/10 bg-[#080808] p-4 sm:mb-28 sm:p-6 md:p-10">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(49,212,255,0.15),_transparent_36%)]" />
+
+          <div className="relative">
+            <Reveal>
+              <div className="max-w-3xl mb-10">
+                <div className="inline-flex items-center gap-2 border border-white/10 bg-black px-3 py-1.5 text-[10px] uppercase tracking-[0.3em] text-white/50 mb-4 sm:px-4 sm:py-2 sm:text-[11px] sm:mb-5">
+                  <IconMapPin size={14} className="text-white/50" />
+                  Venues
+                </div>
+
+                <h2 className="heading-fun text-4xl sm:text-5xl md:text-7xl">
+                  Where We Show Up
+                </h2>
+
+                <p className="body-fun mt-3">
+                  Selected venues across India, the UK, and Dubai.
+                </p>
+              </div>
+            </Reveal>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
+              {venueGroups.map((group, i) => (
+                <Reveal key={group.city} delay={i * 0.08}>
+                  <motion.div
+                    whileHover={{ y: -6 }}
+                    className="fun-card relative h-full overflow-hidden p-5 sm:p-6"
+                  >
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,79,216,0.15),_transparent_34%)]" />
+
+                    <div className="relative flex h-full flex-col">
+                      <div className="flex items-center justify-between gap-4 mb-6">
+                        <p className="text-[11px] uppercase tracking-[0.32em] text-white/45">
+                          {group.region}
+                        </p>
+
+                        <div className="rounded-none border border-white/10 bg-[#080808] px-3 py-1.5 text-xs text-white/50">
+                          {group.venues.length ? `${group.venues.length} venue${group.venues.length > 1 ? "s" : ""}` : "Destination"}
+                        </div>
+                      </div>
+
+                      <h3 className="heading-fun text-3xl">
+                        {group.city}
+                      </h3>
+
+                      {group.venues.length > 0 ? (
+                        <ul className="mt-4 space-y-3 text-sm text-white/50">
+                          {group.venues.map((venue) => (
+                            <li
+                              key={venue}
+                              className="border-b border-white/10 pb-3 last:border-b-0 last:pb-0"
+                            >
+                              {venue}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className="mt-auto flex items-center gap-3 text-sm text-white/50">
+                          <IconSparkles size={18} className="text-white/40 shrink-0" />
+                          <p>Destination-led live formats</p>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* VISION */}
         <Reveal>
-          <div className="">
+          <div className="border-t border-white/10 pt-12 sm:pt-16">
 
-            <h2 className="text-4xl font-bold mb-6">
+            <h2 className="heading-fun text-4xl sm:text-5xl md:text-7xl">
               Our Vision
             </h2>
 
-            <p className="text-white/60 text-lg leading-relaxed">
+            <p className="body-fun mt-4 max-w-2xl leading-relaxed">
               Our vision is to elevate entertainment by creating
               experiences that inspire audiences, empower artists,
               and help brands connect with culture in meaningful

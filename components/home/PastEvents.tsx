@@ -8,37 +8,38 @@ const events = Array.from({ length: 34 }, (_, i) => ({
 
 export function PastEvents() {
   return (
-    <section className="py-24 bg-black text-white" id="events">
-      <div className="max-w-7xl mx-auto px-6">
-
+    <section
+      className="border-t border-white/10 bg-black py-16 text-white sm:py-24 md:py-32 page-fun"
+      id="events"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <Reveal>
-          <h2 className="text-4xl font-bold mb-12">
-            PAST EVENTS
+          <h2 className="heading-fun text-4xl sm:text-6xl md:text-8xl">
+            NIGHTS WE&apos;VE PRODUCED
           </h2>
         </Reveal>
 
-        {/* Masonry Grid */}
-        <div className="columns-2 md:columns-4 gap-6 space-y-6">
+        <Reveal delay={0.1}>
+          <p className="body-fun mb-10 mt-3">
+            34 events. Thousands of memories. Every single one a full house.
+          </p>
+        </Reveal>
 
+        <div className="columns-2 gap-3 space-y-3 sm:gap-6 sm:space-y-6 md:columns-4">
           {events.map((event, i) => (
             <Reveal key={i} delay={i * 0.03}>
-              <div className="relative overflow-hidden rounded-xl group mb-6 break-inside-avoid border border-white/10">
-
+              <div className="fun-card group relative mb-6 break-inside-avoid overflow-hidden rounded-xl">
                 <img
                   src={event.src}
                   alt={`Event ${i + 1}`}
-                  className="w-full h-auto object-cover group-hover:scale-105 transition duration-500"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
 
-                {/* Subtle overlay */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition duration-300" />
-
+                <div className="absolute inset-0 bg-black/10 transition-all duration-300 group-hover:bg-black/0" />
               </div>
             </Reveal>
           ))}
-
         </div>
-
       </div>
     </section>
   )
