@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Bebas_Neue, Geist, Geist_Mono } from "next/font/google"
 import { Navbar } from "@/components/shared/Navbar"
+import { ScrollToTop } from "@/components/shared/ScrollToTop"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -82,6 +83,7 @@ export default function RootLayout({
     >
       <body className="bg-black text-white antialiased">
         <Navbar />
+        <ScrollToTop />
         {children}
       </body>
     </html>

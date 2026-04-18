@@ -33,7 +33,7 @@ export function Hero() {
       <div className="absolute -left-12 top-10 h-56 w-56 rounded-full bg-cyan-400/20 blur-3xl" />
       <div className="absolute -right-12 bottom-14 h-64 w-64 rounded-full bg-fuchsia-500/20 blur-3xl" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-end justify-center pb-16 pt-20 sm:items-center sm:pb-20 sm:pt-24 md:pt-28">
+      <div className="relative z-10 mx-12 flex min-h-screen max-w-7xl items-end justify-center pb-16 pt-20 sm:items-center sm:pb-20 sm:pt-24 md:pt-28">
         <div className="max-w-4xl w-full text-center sm:text-left">
           <motion.p 
             className="eyebrow-fun mb-4 text-[11px] sm:mb-4 sm:text-[10px]"

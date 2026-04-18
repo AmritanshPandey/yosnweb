@@ -67,8 +67,8 @@ export default function GlobeDemo({
   initialPosition?: { lat: number; lng: number };
 }) {
   const globeConfig = {
-    pointSize: 3.2,
-    globeColor: "#081628",
+      pointSize: 1,
+    globeColor: "#000000",
     showAtmosphere: true,
     atmosphereColor: "#c7ecff",
     atmosphereAltitude: 0.14,
@@ -84,7 +84,7 @@ export default function GlobeDemo({
     arcLength: 0.82,
     rings: 1,
     maxRings: 3,
-    initialPosition: initialPosition || { lat: 24.5, lng: 56 },
+      initialPosition: initialPosition || { lat: 22, lng: 78 },
     autoRotate: false,
     autoRotateSpeed: 0.18,
   };
