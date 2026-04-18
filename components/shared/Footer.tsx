@@ -9,7 +9,7 @@ import {
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 bg-black py-16 text-white sm:py-24 md:py-32">
+    <footer className="relative overflow-hidden border-t border-white/10 bg-black py-8 text-white">
       <div className="pointer-events-none absolute -left-20 top-8 h-52 w-52 rounded-full bg-cyan-400/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 bottom-6 h-56 w-56 rounded-full bg-fuchsia-500/15 blur-3xl" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 grid gap-10 sm:gap-12 md:grid-cols-3">
@@ -94,7 +94,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="mt-12 border-t border-white/10 pt-6 text-center text-[10px] uppercase tracking-wide text-white/30 sm:mt-16 sm:text-xs">
+      <div className="mt-2 border-t border-white/10 pt-6 text-center text-[10px] uppercase tracking-wide text-white/30 sm:mt-16 sm:text-xs">
         © {new Date().getFullYear()} YOSN Innovations. All rights reserved.
       </div>
     </footer>
