@@ -115,12 +115,12 @@ export function WeAre() {
   return (
     <section
       id="about"
-      className="overflow-hidden border-t border-white/10 bg-[#080808] py-12 text-white sm:py-24 md:py-32"
+      className="overflow-x-clip border-t border-white/10 bg-[#080808] py-12 text-white sm:py-24 md:py-32"
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-6">
+      <div className="mx-auto w-full px-0 sm:px-6 lg:max-w-7xl">
         <div className="pointer-events-none absolute left-0 top-0 h-56 w-56 rounded-full bg-cyan-400/14 blur-3xl" />
         <div className="grid items-start gap-8 sm:gap-16 lg:grid-cols-[0.88fr_1.12fr] lg:gap-20">
-          <div>
+          <div className="min-w-0 px-4 sm:px-0">
             <Reveal>
               <p className="text-[10px] tracking-[0.3em] uppercase text-white/45">
                 YOSN IN NUMBERS
@@ -131,7 +131,7 @@ export function WeAre() {
               {stats.map((stat, index) => (
                 <Reveal key={stat.label} delay={index * 0.08} className="w-full min-w-0">
                   <div className="w-full min-w-0 border-t border-white/10 pt-3 sm:pt-6">
-                    <h3 className="font-display text-5xl leading-none text-white sm:text-7xl md:text-9xl">
+                    <h3 className="font-display text-7xl leading-none text-white md:text-9xl">
                       <Counter value={stat.value} />
                     </h3>
 
@@ -153,8 +153,8 @@ export function WeAre() {
             </Reveal>
           </div>
 
-          <div className="relative w-full h-[280px] sm:h-[420px] md:h-[520px] lg:h-[620px]">
-            <div className="absolute inset-0 overflow-hidden rounded-lg sm:rounded-xl border border-white/10 bg-black shadow-2xl">
+          <div className="relative h-[280px] w-full min-w-0 sm:h-[420px] md:h-[520px] lg:h-[620px]">
+            <div className="absolute inset-0 overflow-hidden rounded-0  sm:rounded-xl md:rounded-lglg:rounded-2xl border border-white/10 bg-black shadow-2xl">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={index}
@@ -173,14 +173,14 @@ export function WeAre() {
 
             <motion.img
               src={images[(index + 2) % images.length]}
-              className="hidden sm:block absolute -top-3 -right-3 h-20 w-20 border border-white/10 object-cover shadow-lg sm:-top-8 sm:-right-8 sm:h-40 sm:w-40 md:h-48 md:w-48"
+              className="absolute -top-2 -right-2 z-10 h-0 sm:-top-8 sm:-right-8 sm:h-40 sm:w-40 md:h-48 md:w-48"
               animate={{ y: [0, -12, 0] }}
               transition={{ repeat: Infinity, duration: 5 }}
             />
 
             <motion.img
               src={images[(index + 4) % images.length]}
-              className="hidden sm:block absolute -bottom-3 -left-3 h-20 w-20 border border-white/10 object-cover shadow-lg sm:-bottom-8 sm:-left-8 sm:h-40 sm:w-40 md:h-48 md:w-48"
+              className="absolute -bottom-2 -left-2 z-10 h-0 sm:-bottom-8 sm:-left-8 sm:h-40 sm:w-40 md:h-48 md:w-48"
               animate={{ y: [0, 12, 0] }}
               transition={{ repeat: Infinity, duration: 6 }}
             />
@@ -189,7 +189,7 @@ export function WeAre() {
 
         <Reveal delay={0.5}>
           <div className="relative mt-16 sm:mt-20 overflow-hidden border-t border-white/10 pt-8 sm:pt-12 md:mt-24 md:pt-16">
-            <div className="relative flex flex-col gap-4 sm:gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="relative flex flex-col gap-4 px-4 sm:gap-6 sm:px-0 lg:flex-row lg:items-center lg:justify-between">
               <div className="max-w-xl">
                 <div className="inline-flex items-center gap-3 border border-cyan-300/30 bg-black px-4 py-2 text-[11px] uppercase tracking-[0.28em] text-cyan-100/70">
                   <motion.span

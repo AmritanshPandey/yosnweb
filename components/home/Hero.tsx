@@ -1,6 +1,9 @@
 "use client"
 
 import { motion } from "framer-motion"
+import Link from "next/link"
+import { IconArrowRight } from "@tabler/icons-react"
+import { Button } from "@/components/ui/button"
 import { ScrollDownIndicator } from "@/components/shared/ScrollDownIndicator"
 
 // Seeded random generator for consistent but varied particles
@@ -11,7 +14,7 @@ function seededRandom(seed: number): number {
 
 export function Hero() {
   return (
-    <section className="relative mt-18 min-h-[calc(100vh-4.5rem)] overflow-hidden bg-black text-white page-fun sm:mt-24 sm:min-h-[calc(100vh-6rem)]">
+    <section className="relative min-h-screen overflow-hidden bg-black text-white page-fun">
       <video
         autoPlay
         muted
@@ -30,10 +33,10 @@ export function Hero() {
       <div className="absolute -left-12 top-10 h-56 w-56 rounded-full bg-cyan-400/20 blur-3xl" />
       <div className="absolute -right-12 bottom-14 h-64 w-64 rounded-full bg-fuchsia-500/20 blur-3xl" />
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-4.5rem)] max-w-7xl items-center justify-center px-3 pb-20 pt-20 sm:min-h-[calc(100vh-6rem)] sm:px-6 sm:pb-16 sm:pt-32 md:pb-28 md:pt-44">
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-end justify-center pb-16 pt-20 sm:items-center sm:pb-20 sm:pt-24 md:pt-28">
         <div className="max-w-4xl w-full text-center sm:text-left">
           <motion.p 
-            className="eyebrow-fun mb-4 sm:mb-4 text-[10px] sm:text-[10px]"
+            className="eyebrow-fun mb-4 text-[11px] sm:mb-4 sm:text-[10px]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -47,7 +50,7 @@ export function Hero() {
             transition={{ duration: 1, delay: 0.4 }}
             className="relative"
           >
-            <h1 className="font-display text-7xl sm:text-[15vw] md:text-[18vw] leading-[0.85] uppercase tracking-tight text-transparent bg-gradient-to-r from-white via-cyan-100 to-fuchsia-200 bg-clip-text animate-pulse-glow">
+            <h1 className="font-display text-[34vw] sm:text-[15vw] md:text-[18vw] leading-[0.82] sm:leading-[0.85] uppercase tracking-tight text-transparent bg-gradient-to-r from-white via-cyan-100 to-fuchsia-200 bg-clip-text animate-pulse-glow">
               YOSN
             </h1>
             <motion.div
@@ -65,7 +68,7 @@ export function Hero() {
           </motion.div>
 
           <motion.p 
-            className="body-fun mt-4 sm:mt-3 max-w-xl mx-auto sm:mx-0 text-base sm:text-base sm:mt-4 md:text-lg"
+            className="body-fun mt-5 sm:mt-3 max-w-xl sm:mx-0 text-xl sm:text-base sm:mt-4 md:text-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -73,13 +76,16 @@ export function Hero() {
             We don&apos;t just host events. We create nights people never forget.
           </motion.p>
 
-          {/* <Button
+          <Button
             asChild
             size="lg"
             className="mt-8 border border-white/20 bg-gradient-to-r from-cyan-300 to-fuchsia-300 px-6 text-xs uppercase tracking-widest text-black shadow-[0_8px_30px_rgba(49,212,255,0.28)] transition-all duration-300 hover:scale-[1.02] hover:from-fuchsia-300 hover:to-amber-200 sm:mt-10 sm:px-8 sm:text-sm"
           >
-            <Link href="/events">UPCOMING SHOWS →</Link>
-          </Button> */}
+            <Link href="/events" className="inline-flex items-center gap-2">
+              <span>UPCOMING SHOWS</span>
+              <IconArrowRight size={16} stroke={2.2} />
+            </Link>
+          </Button>
         </div>
       </div>
 

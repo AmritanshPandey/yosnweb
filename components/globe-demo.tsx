@@ -14,6 +14,10 @@ type GlobeCity = {
 };
 
 const DEFAULT_CITIES: GlobeCity[] = [
+  { city: "London", lat: 51.5074, lng: -0.1278 },
+  { city: "Manchester", lat: 53.4808, lng: -2.2426 },
+  { city: "Birmingham", lat: 52.4862, lng: -1.8904 },
+  { city: "Dubai", lat: 25.2048, lng: 55.2708 },
   { city: "Mumbai", lat: 19.076, lng: 72.8777 },
   { city: "Delhi", lat: 28.6139, lng: 77.209 },
   { city: "Bangalore", lat: 12.9716, lng: 77.5946 },
@@ -24,10 +28,6 @@ const DEFAULT_CITIES: GlobeCity[] = [
   { city: "Chandigarh", lat: 30.7333, lng: 76.7794 },
   { city: "Pune", lat: 18.5204, lng: 73.8567 },
   { city: "Surat", lat: 21.1702, lng: 72.8311 },
-  { city: "London", lat: 51.5074, lng: -0.1278 },
-  { city: "Manchester", lat: 53.4808, lng: -2.2426 },
-  { city: "Birmingham", lat: 52.4862, lng: -1.8904 },
-  { city: "Dubai", lat: 25.2048, lng: 55.2708 },
 ];
 
 type ArcDatum = {
@@ -60,9 +60,11 @@ function buildArcs(cities: GlobeCity[]): ArcDatum[] {
 export default function GlobeDemo({
   cities = DEFAULT_CITIES,
   className,
+  initialPosition,
 }: {
   cities?: GlobeCity[];
   className?: string;
+  initialPosition?: { lat: number; lng: number };
 }) {
   const globeConfig = {
     pointSize: 3.2,
@@ -82,7 +84,7 @@ export default function GlobeDemo({
     arcLength: 0.82,
     rings: 1,
     maxRings: 3,
-    initialPosition: { lat: 24.5, lng: 56 },
+    initialPosition: initialPosition || { lat: 24.5, lng: 56 },
     autoRotate: false,
     autoRotateSpeed: 0.18,
   };

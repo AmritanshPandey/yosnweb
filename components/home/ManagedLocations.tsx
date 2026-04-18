@@ -10,6 +10,42 @@ import { cn } from "@/lib/utils"
 
 const managedLocations = [
   {
+    city: "London",
+    country: "UK",
+    lat: 51.5074,
+    lng: -0.1278,
+  },
+  {
+    city: "Manchester",
+    country: "UK",
+    lat: 53.4808,
+    lng: -2.2426,
+  },
+  {
+    city: "Birmingham",
+    country: "UK",
+    lat: 52.4862,
+    lng: -1.8904,
+  },
+    {
+    city: "Dublin",
+    country: "Ireland",
+    lat: 53.3498,
+    lng: -6.2603,
+  },
+  {
+    city: "Amsterdam",
+    country: "Netherlands",
+    lat: 52.3676,
+    lng: 4.9041,
+  },
+  {
+    city: "Dubai",
+    country: "UAE",
+    lat: 25.2048,
+    lng: 55.2708,
+  },
+  {
     city: "Mumbai",
     country: "India",
     lat: 19.076,
@@ -69,38 +105,15 @@ const managedLocations = [
     lat: 21.1702,
     lng: 72.8311,
   },
-  {
-    city: "London",
-    country: "UK",
-    lat: 51.5074,
-    lng: -0.1278,
-  },
-  {
-    city: "Manchester",
-    country: "UK",
-    lat: 53.4808,
-    lng: -2.2426,
-  },
-  {
-    city: "Birmingham",
-    country: "UK",
-    lat: 52.4862,
-    lng: -1.8904,
-  },
-  {
-    city: "Dubai",
-    country: "UAE",
-    lat: 25.2048,
-    lng: 55.2708,
-  },
+
 ]
 
 export function ManagedLocations() {
-  const [activeCity, setActiveCity] = useState(managedLocations[0].city)
+  const [activeCity, setActiveCity] = useState(managedLocations[0].city);
 
   const activeLocation =
     managedLocations.find((location) => location.city === activeCity) ??
-    managedLocations[0]
+    managedLocations[0];
 
   return (
     <section className="overflow-hidden border-t border-white/10 bg-black py-14 text-white sm:py-20 md:py-24 page-fun relative">
@@ -172,10 +185,6 @@ export function ManagedLocations() {
                   })}
                 </div>
               </Reveal>
-
-       
-
-         
             </div>
 
             <Reveal delay={0.2}>
@@ -207,9 +216,7 @@ export function ManagedLocations() {
                 </motion.div>
 
                 <div className="bg-background relative flex size-full min-h-[320px] items-center justify-center overflow-hidden rounded-xl border border-white/10 px-6 pt-7 pb-24 sm:min-h-[380px] sm:px-10 sm:pt-8 sm:pb-28 md:min-h-[430px] md:pb-32">
-                  <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-linear-to-b from-cyan-100 via-white to-fuchsia-200/60 bg-clip-text text-center text-5xl leading-none font-semibold whitespace-pre-wrap text-transparent opacity-35 sm:text-7xl will-change-auto">
-                    CITIES
-                  </span>
+
                   <GlobeDemo
                     className="inset-0 z-[1] scale-[1.05]"
                     cities={managedLocations.map((location) => ({
@@ -217,6 +224,7 @@ export function ManagedLocations() {
                       lat: location.lat,
                       lng: location.lng,
                     }))}
+                    initialPosition={{ lat: activeLocation.lat, lng: activeLocation.lng }}
                   />
                   <div className="pointer-events-none absolute inset-0 h-full bg-[radial-gradient(circle_at_50%_170%,rgba(49,212,255,0.14),rgba(255,255,255,0))]" />
                 </div>
@@ -227,5 +235,5 @@ export function ManagedLocations() {
         </div>
       </div>
     </section>
-  )
+  );
 }

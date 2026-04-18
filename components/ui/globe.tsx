@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Color, Scene, Fog, PerspectiveCamera, Vector3, Group } from "three";
 import ThreeGlobe from "three-globe";
-import { useThree, Canvas, extend } from "@react-three/fiber";
+import { useThree, Canvas, extend, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import countries from "@/data/globe.json";
 declare module "@react-three/fiber" {
@@ -16,6 +16,7 @@ declare module "@react-three/fiber" {
 extend({ ThreeGlobe: ThreeGlobe });
 
 const RING_PROPAGATION_SPEED = 3;
+const ROTATION_SMOOTHING = 0.08;
 const aspect = 1.2;
 const cameraZ = 300;
 
@@ -65,6 +66,7 @@ let numbersOfRings = [0];
 export function Globe({ globeConfig, data }: WorldProps) {
   const globeRef = useRef<ThreeGlobe | null>(null);
   const groupRef = useRef<Group | null>(null);
+  const targetRotationRef = useRef<{ x: number; y: number } | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   const defaultProps = {
@@ -117,15 +119,29 @@ export function Globe({ globeConfig, data }: WorldProps) {
 
   // Focus globe on configured region
   useEffect(() => {
-    if (!groupRef.current || !globeConfig.initialPosition) return;
+    if (!globeConfig.initialPosition) return;
 
     const { lat, lng } = globeConfig.initialPosition;
     const toRad = Math.PI / 180;
 
-    // Rotate globe so the requested lat/lng stays near center/front.
-    groupRef.current.rotation.y = -lng * toRad;
-    groupRef.current.rotation.x = (lat * toRad) * 0.38;
+    // Keep the next focus position as a target for smooth interpolation.
+    targetRotationRef.current = {
+      y: -lng * toRad,
+      x: (lat * toRad) * 0.38,
+    };
   }, [globeConfig.initialPosition]);
+
+  useFrame(() => {
+    if (!groupRef.current || !targetRotationRef.current) return;
+
+    const current = groupRef.current.rotation;
+    const target = targetRotationRef.current;
+
+    // Interpolate yaw via shortest path so it does not spin the long way around.
+    const yawDelta = ((target.y - current.y + Math.PI) % (Math.PI * 2)) - Math.PI;
+    current.y += yawDelta * ROTATION_SMOOTHING;
+    current.x += (target.x - current.x) * ROTATION_SMOOTHING;
+  });
 
   // Build data when globe is initialized or when data changes
   useEffect(() => {
