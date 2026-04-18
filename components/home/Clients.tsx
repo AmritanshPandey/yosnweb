@@ -28,14 +28,14 @@ export function Clients() {
           </p>
         </Reveal>
 
-        <div className="grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-12 md:grid-cols-3">
+        <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-12 md:grid-cols-3">
           {logos.map((logo, i) => (
             <Reveal key={i} delay={i * 0.08}>
-              <div className="fun-card flex h-32 items-center justify-center rounded-xl bg-black p-8 sm:h-40 sm:p-10 md:h-44">
+              <div className="flex h-32 items-center justify-center rounded-xl border border-white/20 bg-white p-8 transition-all duration-300 hover:border-cyan-300/40 hover:shadow-[0_16px_42px_rgba(49,212,255,0.18),0_8px_28px_rgba(255,79,216,0.12)] sm:h-40 sm:p-10 md:h-44">
                 <img
                   src={logo}
                   alt={`Client ${i + 1}`}
-                  className="max-h-20 w-auto object-contain opacity-60 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
+                  className="max-h-20 w-auto object-contain opacity-100 transition-all duration-300 hover:scale-110"
                 />
               </div>
             </Reveal>
