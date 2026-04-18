@@ -11,7 +11,7 @@ const links = [
   { label: "Artists", href: "/artists" },
   { label: "Events", href: "/events" },
   { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  // { label: "Contact", href: "/contact" },
 ]
 
 export function Navbar() {
@@ -38,11 +38,11 @@ export function Navbar() {
       <div
         className={`transition-all duration-500
         ${scrolled
-            ? "bg-black/60 backdrop-blur-xl border-b border-white/10 shadow-lg h-20"
-            : "bg-white/5 backdrop-blur-xl border-b border-white/10 h-24"
+            ? "bg-black/70 backdrop-blur-xl border-b border-cyan-300/20 shadow-lg h-16 sm:h-20"
+            : "bg-white/5 backdrop-blur-xl border-b border-fuchsia-300/20 h-18 sm:h-24"
           }`}
       >
-        <div className="max-w-7xl mx-auto px-6 flex items-center h-full text-white relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center h-full text-white relative">
 
           {/* Left spacer (keeps center alignment) */}
           <div className="hidden md:flex flex-1" />
@@ -56,7 +56,7 @@ export function Navbar() {
               <img
                 src="/assets/logos/logo.png"
                 alt="YOSN Logo"
-                className="h-12 md:h-14 w-auto"
+                className="h-10 w-auto sm:h-12 md:h-14"
               />
             </Link>
           </motion.div>
@@ -72,14 +72,14 @@ export function Navbar() {
                 <motion.div key={link.href} className="relative" whileHover="hover">
                   <Link
                     href={link.href}
-                    className={`text-sm tracking-wide font-medium transition
-            ${isActive ? "text-white" : "text-white/70 hover:text-white"}`}
+                    className={`text-xs uppercase tracking-widest font-medium transition-all duration-300
+            ${isActive ? "text-cyan-200" : "text-white/60 hover:text-fuchsia-200"}`}
                   >
                     {link.label}
                   </Link>
 
                   <motion.span
-                    className="absolute left-0 -bottom-1 h-[1px] bg-[#2AAFFB]"
+                    className="absolute left-0 -bottom-1 h-[2px] bg-gradient-to-r from-cyan-300 to-fuchsia-300"
                     animate={{ width: isActive ? "100%" : "0%" }}
                     whileHover={{ width: "100%" }}
                     transition={{ duration: 0.3 }}
@@ -108,11 +108,11 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.25 }}
-            className="md:hidden bg-black/95 backdrop-blur-xl border-b border-white/10"
+            className="md:hidden bg-black/95 backdrop-blur-xl border-b border-fuchsia-300/20"
           >
-            <div className="flex flex-col px-6 py-8 space-y-6">
+            <div className="flex flex-col px-4 py-6 space-y-5 sm:px-6 sm:py-8 sm:space-y-6">
 
-              {links.map((link, i) => {
+              {links.map((link) => {
                 const isActive =
                   pathname === link.href ||
                   pathname.startsWith(link.href + "/")
@@ -122,10 +122,10 @@ export function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className={`text-lg font-medium transition
+                    className={`text-base font-medium uppercase tracking-widest transition-all duration-300
                     ${isActive
-                        ? "text-[#2AAFFB]"
-                        : "text-white/80 hover:text-white"
+                        ? "text-cyan-200"
+                        : "text-white/60 hover:text-fuchsia-200"
                       }`}
                   >
                     {link.label}

@@ -38,28 +38,28 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="py-24 bg-black text-white">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-16 bg-black text-white border-t border-white/10 sm:py-24 md:py-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         <Reveal>
-          <h2 className="text-4xl font-bold mb-14 text-center">
+          <h2 className="font-display text-4xl uppercase tracking-tight text-white mb-10 text-center sm:text-5xl sm:mb-14 md:text-7xl">
             CLIENT COMMENTS
           </h2>
         </Reveal>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-3 sm:gap-8">
           {testimonials.map((item, i) => (
             <Reveal key={i} delay={i * 0.08}>
-              <Card className="bg-white/5 border-white/10 backdrop-blur-sm hover:border-[#2AAFFB]/40 transition duration-300">
-                <CardContent className="p-8 space-y-6">
+              <Card className="bg-[#080808] border-white/10 hover:border-white/25 transition-all duration-300">
+                <CardContent className="p-6 space-y-5 sm:p-8 sm:space-y-6">
 
                   {/* Quote Accent */}
-                  <div className="text-[#2AAFFB] text-3xl font-bold leading-none">
-                    “
+                  <div className="font-display text-4xl leading-none text-white/30">
+                    &ldquo;
                   </div>
 
                   {/* Testimonial Text */}
-                  <p className="text-white/80 text-sm leading-relaxed">
+                  <p className="text-sm leading-relaxed tracking-wide text-white/50">
                     {item.text}
                   </p>
 
@@ -68,10 +68,10 @@ export function Testimonials() {
 
                   {/* Brand + Role */}
                   <div>
-                    <p className="text-sm font-semibold">
+                    <p className="text-xs uppercase tracking-widest text-white font-medium">
                       {item.brand}
                     </p>
-                    <p className="text-xs text-white/50">
+                    <p className="mt-1 text-xs tracking-wide text-white/40">
                       {item.person}
                     </p>
                   </div>
