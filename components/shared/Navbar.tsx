@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { startTransition, useEffect, useState } from "react"
+import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -28,24 +29,28 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    startTransition(() => setOpen(false))
+  }, [pathname])
+
   return (
     <motion.header
       initial={false}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="fixed top-0 left-0 w-full z-50"
+      className="fixed left-0 top-0 z-50 w-full"
     >
       <div
-        className={`transition-all duration-500
-        ${scrolled
-            ? "bg-black/70 backdrop-blur-xl border-b border-cyan-300/20 shadow-lg h-16 sm:h-20"
-            : "bg-white/5 backdrop-blur-xl border-b border-fuchsia-300/20 h-18 sm:h-24"
-          }`}
+        className={`transition-all duration-500 ${
+          scrolled
+            ? "h-16 border-b border-cyan-300/20 bg-black/70 shadow-lg backdrop-blur-xl sm:h-20"
+            : "h-16 border-b border-fuchsia-300/20 bg-white/5 backdrop-blur-xl sm:h-20"
+        }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center h-full text-white relative">
+        <div className="relative mx-auto flex h-full max-w-7xl items-center px-4 text-white sm:px-6">
 
           {/* Left spacer (keeps center alignment) */}
-          <div className="hidden md:flex flex-1" />
+          <div className="hidden flex-1 md:flex" />
 
           {/* Logo (Centered) */}
           <motion.div
@@ -53,16 +58,19 @@ export function Navbar() {
             className="absolute left-1/2 -translate-x-1/2"
           >
             <Link href="/">
-              <img
+              <Image
                 src="/assets/logos/logo.png"
                 alt="YOSN Logo"
+                width={112}
+                height={56}
                 className="h-10 w-auto sm:h-12 md:h-14"
+                priority
               />
             </Link>
           </motion.div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-10 ml-auto">
+          <nav className="ml-auto hidden items-center gap-10 md:flex">
             {links.map((link) => {
               const isActive =
                 pathname === link.href ||
@@ -72,14 +80,15 @@ export function Navbar() {
                 <motion.div key={link.href} className="relative" whileHover="hover">
                   <Link
                     href={link.href}
-                    className={`text-xs uppercase tracking-widest font-medium transition-all duration-300
-            ${isActive ? "text-cyan-200" : "text-white/60 hover:text-fuchsia-200"}`}
+                    className={`text-xs font-medium uppercase tracking-widest transition-all duration-300 ${
+                      isActive ? "text-cyan-200" : "text-white/60 hover:text-fuchsia-200"
+                    }`}
                   >
                     {link.label}
                   </Link>
 
                   <motion.span
-                    className="absolute left-0 -bottom-1 h-[2px] bg-gradient-to-r from-cyan-300 to-fuchsia-300"
+                    className="absolute -bottom-1 left-0 h-[2px] bg-gradient-to-r from-cyan-300 to-fuchsia-300"
                     animate={{ width: isActive ? "100%" : "0%" }}
                     whileHover={{ width: "100%" }}
                     transition={{ duration: 0.3 }}
@@ -91,48 +100,82 @@ export function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden ml-auto"
+            className="ml-auto rounded-full p-2 text-white transition-colors duration-300 md:hidden"
             onClick={() => setOpen(!open)}
+            aria-label={open ? "Close menu" : "Open menu"}
           >
-            {open ? <IconX size={28} /> : <IconMenu2 size={28} />}
+            <AnimatePresence mode="wait" initial={false}>
+              {open ? (
+                <motion.span
+                  key="close"
+                  initial={{ rotate: -45, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 45, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <IconX size={22} />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="open"
+                  initial={{ rotate: 45, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -45, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <IconMenu2 size={22} />
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
 
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu — compact dropdown */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            key="mobile-menu"
+            initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.25 }}
-            className="md:hidden bg-black/95 backdrop-blur-xl border-b border-fuchsia-300/20"
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="absolute inset-x-0 top-16 z-50 border-b border-white/10 bg-black/90 backdrop-blur-2xl sm:top-20 md:hidden"
           >
-            <div className="flex flex-col px-4 py-6 space-y-5 sm:px-6 sm:py-8 sm:space-y-6">
+            <div className="mx-auto max-w-2xl px-5 py-4 sm:px-8">
+              <nav>
+                {links.map((link, idx) => {
+                  const isActive =
+                    pathname === link.href ||
+                    pathname.startsWith(link.href + "/")
 
-              {links.map((link) => {
-                const isActive =
-                  pathname === link.href ||
-                  pathname.startsWith(link.href + "/")
-
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setOpen(false)}
-                    className={`text-base font-medium uppercase tracking-widest transition-all duration-300
-                    ${isActive
-                        ? "text-cyan-200"
-                        : "text-white/60 hover:text-fuchsia-200"
-                      }`}
-                  >
-                    {link.label}
-                  </Link>
-                )
-              })}
-
+                  return (
+                    <motion.div
+                      key={link.href}
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.035, duration: 0.18 }}
+                    >
+                      <Link
+                        href={link.href}
+                        onClick={() => setOpen(false)}
+                        className={`flex items-center justify-between py-3.5 text-sm uppercase tracking-[0.18em] transition-colors duration-200 ${
+                          isActive ? "text-cyan-200" : "text-white/55 hover:text-white"
+                        }`}
+                      >
+                        {link.label}
+                        {isActive && (
+                          <span className="h-1.5 w-1.5 rounded-full bg-cyan-300" />
+                        )}
+                      </Link>
+                      {idx < links.length - 1 && (
+                        <div className="h-px bg-white/8" />
+                      )}
+                    </motion.div>
+                  )
+                })}
+              </nav>
             </div>
           </motion.div>
         )}

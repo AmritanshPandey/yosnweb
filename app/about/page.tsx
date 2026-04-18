@@ -47,7 +47,7 @@ const venueGroups = [
   {
     city: "Mumbai",
     region: "India",
-    venues: ["NMACC", "NSCI Dome", "NCPA", "Shanmukhanada Auditorium"],
+    venues: ["Nesco", "Rangmandir", "Royal Opera House"],
   },
   {
     city: "Delhi",
@@ -57,7 +57,7 @@ const venueGroups = [
   {
     city: "London",
     region: "UK",
-    venues: ["Royal Festival Hall"],
+    venues: ["Royal Festival Hall", "Indigo @O2", "Electric Ballroom", "The Garage"],
   },
   {
     city: "Manchester",
@@ -72,6 +72,16 @@ const venueGroups = [
   {
     city: "Dubai",
     region: "UAE",
+    venues: [],
+  },
+  {
+    city: "Dublin",
+    region: "Ireland",
+    venues: [],
+  },
+  {
+    city: "Amsterdam",
+    region: "Netherlands",
     venues: [],
   },
 ]
@@ -256,8 +266,7 @@ export default function Page() {
                         </ul>
                       ) : (
                         <div className="mt-auto flex items-center gap-3 text-sm text-white/50">
-                          <IconSparkles size={18} className="text-white/40 shrink-0" />
-                          <p>Destination-led live formats</p>
+                       
                         </div>
                       )}
                     </div>
