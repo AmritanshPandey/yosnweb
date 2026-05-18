@@ -14,12 +14,13 @@ import {
   IconMoodSmile,
   IconSparkles,
 } from "@tabler/icons-react"
+import { House } from "lucide-react"
 
 const stats = [
-  { value: 100, label: "Events", icon: IconCalendarEvent },
-  { value: 50, label: "Artists", icon: IconMicrophone },
-  { value: 100, label: "Clients", icon: IconUsers },
-  { value: 50, label: "Brands", icon: IconBrandStripe },
+  { value: 250, label: "Events", icon: IconCalendarEvent },
+  { value: 40, label: "Artists", icon: IconMicrophone },
+  { value: 50, label: "Clients", icon: IconUsers },
+  { value: 20, label: "Brands", icon: IconBrandStripe },
 ]
 
 const services = [
@@ -47,12 +48,17 @@ const venueGroups = [
   {
     city: "Mumbai",
     region: "India",
-    venues: ["Nesco", "Rangmandir", "Royal Opera House"],
+    venues: ["Nesco", "Rangmandir", "Royal Opera House", "NSCI", "NMACC", "NESCO", "NCPA", "Balgandharva Rang Mandir", "Sri Shanmukhananda Chandrasekarendra Saraswathi Auditorium", "Fine Arts Society"],
   },
   {
     city: "Delhi",
     region: "India",
-    venues: ["Bharat Mandapam", "Yashobhoomi Convention Centre"],
+    venues: ["Bharat Mandapam", "Yashobhoomi Convention Centre", "Epicentre Auditorium", "Studio XO", "Aiwan-e-Ghalib Auditorium"],
+  },
+  {
+    city: "Bangalore",
+    region: "India",
+    venues: ["Good Shepherd Auditorium",  "Prestige Centre for Performing Arts", "Chowdiah Memorial Hall", "Bhartiya Mall of Bangalore", "Phoenix Mall of Asia"],
   },
   {
     city: "London",

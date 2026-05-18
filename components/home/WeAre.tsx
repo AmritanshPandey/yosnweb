@@ -11,11 +11,15 @@ import {
 import { Reveal } from "@/components/shared/Reveal"
 
 const images = [
-  "/assets/banners/banner1.png",
+  "/assets/banners/new1.jpeg",
   "/assets/banners/banner2.png",
+  "/assets/banners/new3.jpeg",
+  "/assets/banners/banner5.png",
+  "/assets/banners/banner1.png",
+  "/assets/banners/new2.jpeg",
   "/assets/banners/banner3.png",
   "/assets/banners/banner4.png",
-  "/assets/banners/banner5.png",
+  "/assets/banners/new5.jpeg",
   "/assets/banners/banner6.png",
   "/assets/banners/banner7.png",
   "/assets/banners/banner8.png",
@@ -23,9 +27,9 @@ const images = [
 ]
 
 const stats = [
-  { value: 15, label: "Clients" },
-  { value: 50, label: "Events" },
-  { value: 30, label: "Artists" },
+  { value: 50, label: "Clients" },
+  { value: 250, label: "Events" },
+  { value: 40, label: "Artists" },
   { value: 20, label: "Brands" },
 ]
 
