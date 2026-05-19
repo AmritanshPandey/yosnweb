@@ -3,6 +3,7 @@
 import { motion, useInView, useMotionValue, useSpring } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
 import { Reveal } from "@/components/shared/Reveal"
+import { SplitHeading } from "@/components/shared/SplitHeading"
 
 import {
   IconUsers,
@@ -134,9 +135,11 @@ export default function Page() {
             <p className="eyebrow-fun mb-4 sm:mb-6">
               Who We Are
             </p>
-            <h1 className="heading-fun text-5xl sm:text-6xl md:text-8xl">
-              About Us
-            </h1>
+            <SplitHeading
+              text="About Us"
+              as="h1"
+              className="heading-fun text-5xl sm:text-6xl md:text-8xl"
+            />
 
             <p className="body-fun mt-4 max-w-2xl leading-relaxed sm:text-base">
               YOSN Innovations is an experiential entertainment company
@@ -178,11 +181,10 @@ export default function Page() {
         </div>
 
         {/* WHAT WE DO */}
-        <Reveal>
-          <h2 className="heading-fun mb-10 text-4xl sm:mb-14 sm:text-5xl md:text-7xl">
-            What We Do
-          </h2>
-        </Reveal>
+        <SplitHeading
+          text="What We Do"
+          className="heading-fun mb-10 text-4xl sm:mb-14 sm:text-5xl md:text-7xl"
+        />
 
         <div className="grid gap-6 mb-20 sm:gap-10 md:grid-cols-3 sm:mb-28">
 
@@ -225,9 +227,10 @@ export default function Page() {
                   Venues
                 </div>
 
-                <h2 className="heading-fun text-4xl sm:text-5xl md:text-7xl">
-                  Where We Show Up
-                </h2>
+                <SplitHeading
+                  text="Where We Show Up"
+                  className="heading-fun text-4xl sm:text-5xl md:text-7xl"
+                />
 
                 <p className="body-fun mt-3">
                   Selected venues across India, the UK, and Dubai.
@@ -287,9 +290,10 @@ export default function Page() {
         <Reveal>
           <div className="border-t border-white/10 pt-12 sm:pt-16">
 
-            <h2 className="heading-fun text-4xl sm:text-5xl md:text-7xl">
-              Our Vision
-            </h2>
+            <SplitHeading
+              text="Our Vision"
+              className="heading-fun text-4xl sm:text-5xl md:text-7xl"
+            />
 
             <p className="body-fun mt-4 max-w-2xl leading-relaxed">
               Our vision is to elevate entertainment by creating

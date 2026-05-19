@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { motion } from "framer-motion"
 import { Reveal } from "@/components/shared/Reveal"
 
@@ -61,10 +62,13 @@ export default function Page() {
               }}
               transition={{ duration: 0.8 }}
             >
-              <img
+              <Image
                 src="/assets/one/one.png"
                 alt="One Night Event Logo"
+                width={480}
+                height={480}
                 className="h-72 md:h-120 w-auto"
+                priority
               />
             </motion.div>
 
@@ -211,13 +215,15 @@ export default function Page() {
 
                 <motion.div
                   whileHover={{ y: -6 }}
-                  className="fun-card relative overflow-hidden rounded-xl group"
+                  className="fun-card relative h-[240px] overflow-hidden rounded-xl group sm:h-[280px]"
                 >
 
-                  <img
+                  <Image
                     src={artist.img}
                     alt={artist.name}
-                    className="w-full h-[240px] object-cover transition-all duration-500 group-hover:scale-105 sm:h-[280px]"
+                    fill
+                    className="object-cover transition-all duration-500 group-hover:scale-105"
+                    sizes="(max-width: 640px) 50vw, 20vw"
                   />
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
@@ -247,17 +253,20 @@ export default function Page() {
           <div className="columns-2 gap-3 space-y-3 sm:gap-6 sm:space-y-6 md:columns-3 lg:columns-4">
 
             {gallery.map((img, i) => (
-              <Reveal key={i} delay={i * 0.03}>
+              <Reveal key={i} delay={Math.min(i * 0.03, 0.15)}>
 
                 <motion.div
                   whileHover={{ scale: 1.02 }}
                   className="fun-card relative overflow-hidden rounded-xl break-inside-avoid"
                 >
 
-                  <img
+                  <Image
                     src={img.src}
-                    alt="One Night Event"
+                    alt="One Night event photo"
+                    width={600}
+                    height={800}
                     className="w-full h-auto object-cover hover:scale-105 transition duration-500"
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                   />
 
                 </motion.div>

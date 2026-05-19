@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { IconArrowRight } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
+import { MagneticButton } from "@/components/shared/MagneticButton"
 import { ScrollDownIndicator } from "@/components/shared/ScrollDownIndicator"
 
 // Seeded random generator for consistent but varied particles
@@ -44,54 +45,54 @@ export function Hero() {
             MUMBAI&apos;S LIVE ENTERTAINMENT STUDIO
           </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="relative"
-          >
-            <h1 className="font-display text-[34vw] sm:text-[15vw] md:text-[18vw] leading-[0.82] sm:leading-[0.85] uppercase tracking-tight text-transparent bg-gradient-to-r from-white via-cyan-100 to-fuchsia-200 bg-clip-text animate-pulse-glow">
-              YOSN
+          <div className="relative">
+            <h1 className="font-display text-[34vw] sm:text-[15vw] md:text-[18vw] leading-[0.82] sm:leading-[0.85] uppercase tracking-tight">
+              {["Y", "O", "S", "N"].map((letter, i) => (
+                <motion.span
+                  key={letter}
+                  className="inline-block text-transparent bg-gradient-to-br from-white via-cyan-100 to-fuchsia-200 bg-clip-text"
+                  initial={{ opacity: 0, y: 64, rotateX: 80 }}
+                  animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                  transition={{
+                    duration: 0.75,
+                    delay: 0.35 + i * 0.1,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                >
+                  {letter}
+                </motion.span>
+              ))}
             </h1>
-            <motion.div
-              className="absolute -inset-3 sm:-inset-8 bg-gradient-to-r from-cyan-500/20 via-fuchsia-500/20 to-transparent blur-3xl pointer-events-none"
-              animate={{
-                opacity: [0.3, 0.6, 0.3],
-                scale: [1, 1.1, 1],
-              }}
-              transition={{
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-          </motion.div>
+            <div className="absolute -inset-3 sm:-inset-8 bg-gradient-to-r from-cyan-500/20 via-fuchsia-500/20 to-transparent blur-3xl pointer-events-none opacity-50" />
+          </div>
 
-          <motion.p 
+          <motion.p
             className="body-fun mt-5 sm:mt-3 max-w-xl sm:mx-0 text-xl sm:text-base sm:mt-4 md:text-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
           >
             We don&apos;t just host events. We create nights people never forget.
           </motion.p>
 
-          <Button
-            asChild
-            size="lg"
-            className="mt-8 border border-white/20 bg-gradient-to-r from-cyan-300 to-fuchsia-300 px-6 text-xs uppercase tracking-widest text-black shadow-[0_8px_30px_rgba(49,212,255,0.28)] transition-all duration-300 hover:scale-[1.02] hover:from-fuchsia-300 hover:to-amber-200 sm:mt-10 sm:px-8 sm:text-sm"
-          >
-            <Link href="/events" className="inline-flex items-center gap-2">
-              <span>UPCOMING SHOWS</span>
-              <IconArrowRight size={16} stroke={2.2} />
-            </Link>
-          </Button>
+          <MagneticButton className="mt-8 inline-block sm:mt-10">
+            <Button
+              asChild
+              size="lg"
+              className="border border-white/20 bg-gradient-to-r from-cyan-300 to-fuchsia-300 px-6 text-xs uppercase tracking-widest text-black shadow-[0_8px_40px_rgba(49,212,255,0.38)] transition-all duration-300 hover:scale-[1.03] hover:shadow-[0_12px_50px_rgba(49,212,255,0.5)] hover:from-fuchsia-300 hover:to-amber-200 sm:px-8 sm:text-sm"
+            >
+              <Link href="/events" className="inline-flex items-center gap-2">
+                <span>UPCOMING SHOWS</span>
+                <IconArrowRight size={16} stroke={2.2} />
+              </Link>
+            </Button>
+          </MagneticButton>
         </div>
       </div>
 
-      {/* Floating Particles */}
+      {/* Floating Particles — reduced to 3 for performance */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-5" suppressHydrationWarning>
-        {[...Array(8)].map((_, i) => {
+        {[0, 1, 2].map((i) => {
           const seed = i * 12.9898
           return (
             <motion.div
@@ -108,9 +109,9 @@ export function Hero() {
                 opacity: [0, 0.8, 0],
               }}
               transition={{
-                duration: 6 + seededRandom(seed + 1) * 3,
+                duration: 7 + seededRandom(seed + 1) * 3,
                 repeat: Infinity,
-                delay: seededRandom(seed + 2) * 3.2,
+                delay: seededRandom(seed + 2) * 4,
                 ease: "easeInOut",
               }}
             />

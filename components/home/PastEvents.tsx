@@ -1,6 +1,8 @@
 "use client"
 
+import Image from "next/image"
 import { Reveal } from "@/components/shared/Reveal"
+import { SplitHeading } from "@/components/shared/SplitHeading"
 
 const events = Array.from({ length: 34 }, (_, i) => ({
   src: `/assets/events/event${i + 1}.jpg`,
@@ -13,11 +15,10 @@ export function PastEvents() {
       id="events"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <Reveal>
-          <h2 className="heading-fun text-4xl sm:text-6xl md:text-8xl">
-            NIGHTS WE&apos;VE PRODUCED
-          </h2>
-        </Reveal>
+        <SplitHeading
+          text="NIGHTS WE'VE PRODUCED"
+          className="heading-fun text-4xl sm:text-6xl md:text-8xl"
+        />
 
         <Reveal delay={0.1}>
           <p className="body-fun mb-10 mt-3">
@@ -27,12 +28,15 @@ export function PastEvents() {
 
         <div className="columns-2 gap-3 space-y-3 sm:gap-6 sm:space-y-6 md:columns-4">
           {events.map((event, i) => (
-            <Reveal key={i} delay={i * 0.03}>
+            <Reveal key={i} delay={Math.min(i * 0.03, 0.18)}>
               <div className="fun-card group relative mb-6 break-inside-avoid overflow-hidden rounded-xl">
-                <img
+                <Image
                   src={event.src}
-                  alt={`Event ${i + 1}`}
+                  alt={`YOSN event night ${i + 1}`}
+                  width={600}
+                  height={800}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 50vw, 25vw"
                 />
 
                 <div className="absolute inset-0 bg-black/10 transition-all duration-300 group-hover:bg-black/0" />

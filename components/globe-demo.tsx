@@ -14,10 +14,6 @@ type GlobeCity = {
 };
 
 const DEFAULT_CITIES: GlobeCity[] = [
-  { city: "London", lat: 51.5074, lng: -0.1278 },
-  { city: "Manchester", lat: 53.4808, lng: -2.2426 },
-  { city: "Birmingham", lat: 52.4862, lng: -1.8904 },
-  { city: "Dubai", lat: 25.2048, lng: 55.2708 },
   { city: "Mumbai", lat: 19.076, lng: 72.8777 },
   { city: "Delhi", lat: 28.6139, lng: 77.209 },
   { city: "Bangalore", lat: 12.9716, lng: 77.5946 },
@@ -28,6 +24,10 @@ const DEFAULT_CITIES: GlobeCity[] = [
   { city: "Chandigarh", lat: 30.7333, lng: 76.7794 },
   { city: "Pune", lat: 18.5204, lng: 73.8567 },
   { city: "Surat", lat: 21.1702, lng: 72.8311 },
+  { city: "Dubai", lat: 25.2048, lng: 55.2708 },
+  { city: "London", lat: 51.5074, lng: -0.1278 },
+  { city: "Manchester", lat: 53.4808, lng: -2.2426 },
+  { city: "Birmingham", lat: 52.4862, lng: -1.8904 },
 ];
 
 type ArcDatum = {
@@ -40,11 +40,13 @@ type ArcDatum = {
   color: string;
 };
 
-const ARC_COLORS = ["#22d3ee", "#60a5fa", "#f472b6"];
+const ARC_COLORS = ["#31d4ff", "#a78bfa", "#ff4fd8"];
+
+const INTERNATIONAL = new Set(["London", "Manchester", "Birmingham", "Dublin", "Amsterdam", "Dubai"]);
 
 function buildArcs(cities: GlobeCity[]): ArcDatum[] {
   if (cities.length < 2) return [];
-  const hub = cities[0];
+  const hub = cities[0]; // Mumbai
 
   return cities.slice(1).map((city, index) => ({
     order: index + 1,
@@ -52,7 +54,7 @@ function buildArcs(cities: GlobeCity[]): ArcDatum[] {
     startLng: hub.lng,
     endLat: city.lat,
     endLng: city.lng,
-    arcAlt: city.city === "London" || city.city === "Manchester" || city.city === "Birmingham" ? 0.33 : 0.2,
+    arcAlt: INTERNATIONAL.has(city.city) ? 0.38 : 0.18,
     color: ARC_COLORS[index % ARC_COLORS.length],
   }));
 }
@@ -61,33 +63,37 @@ export default function GlobeDemo({
   cities = DEFAULT_CITIES,
   className,
   initialPosition,
+  highlightRing,
 }: {
   cities?: GlobeCity[];
   className?: string;
   initialPosition?: { lat: number; lng: number };
+  highlightRing?: { lat: number; lng: number };
 }) {
-  const globeConfig = {
-      pointSize: 1,
+  const globeConfig = useMemo(() => ({
+    pointSize: 1,
     globeColor: "#000000",
     showAtmosphere: true,
-    atmosphereColor: "#c7ecff",
-    atmosphereAltitude: 0.14,
-    emissive: "#0d203a",
-    emissiveIntensity: 0.24,
+    atmosphereColor: "#b3f0ff",
+    atmosphereAltitude: 0.16,
+    emissive: "#071828",
+    emissiveIntensity: 0.28,
     shininess: 0.9,
-    polygonColor: "rgba(173,223,255,0.6)",
+    polygonColor: "rgba(173,223,255,0.55)",
     ambientLight: "#67e8f9",
     directionalLeftLight: "#f0f9ff",
     directionalTopLight: "#e0f2fe",
     pointLight: "#f5d0fe",
-    arcTime: 1300,
-    arcLength: 0.82,
+    arcTime: 1200,
+    arcLength: 0.85,
     rings: 1,
     maxRings: 3,
-      initialPosition: initialPosition || { lat: 22, lng: 78 },
-    autoRotate: false,
-    autoRotateSpeed: 0.18,
-  };
+    initialPosition: initialPosition ?? { lat: 20, lng: 77 },
+    autoRotate: true,
+    autoRotateSpeed: 0.35,
+    highlightRing,
+  }), [initialPosition, highlightRing]);
+
   const cityArcs = useMemo(() => buildArcs(cities), [cities]);
 
   return (

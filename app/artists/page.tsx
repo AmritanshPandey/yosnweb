@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { motion } from "framer-motion"
 import { Reveal } from "@/components/shared/Reveal"
@@ -139,7 +140,7 @@ function ArtistGrid({ artists }: { artists: Artist[] }) {
 
             {artists.map((artist, i) => (
 
-                <Reveal key={artist.name} delay={i * 0.05}>
+                <Reveal key={artist.name} delay={Math.min(i * 0.05, 0.25)}>
 
                     <motion.div
                         whileHover={{ y: -6 }}
@@ -147,10 +148,12 @@ function ArtistGrid({ artists }: { artists: Artist[] }) {
                     >
 
                         {artist.img ? (
-                            <img
+                            <Image
                                 src={artist.img}
                                 alt={artist.name}
-                                className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                                fill
+                                className="object-cover transition-all duration-500 group-hover:scale-110"
+                                sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                             />
                         ) : (
                             <div className="w-full h-full bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_55%),linear-gradient(135deg,_#111,_#050505)]" />

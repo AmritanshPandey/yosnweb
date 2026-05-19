@@ -54,6 +54,7 @@ export type GlobeConfig = {
   };
   autoRotate?: boolean;
   autoRotateSpeed?: number;
+  highlightRing?: { lat: number; lng: number };
 };
 
 interface WorldProps {
@@ -230,6 +231,12 @@ export function Globe({ globeConfig, data }: WorldProps) {
     defaultProps.maxRings,
   ]);
 
+  // Keep highlightRing in a ref so the interval closure always reads the latest value
+  const highlightRingRef = useRef(globeConfig.highlightRing);
+  useEffect(() => {
+    highlightRingRef.current = globeConfig.highlightRing;
+  }, [globeConfig.highlightRing]);
+
   // Handle rings animation with cleanup
   useEffect(() => {
     if (!globeRef.current || !isInitialized || !data) return;
@@ -243,13 +250,18 @@ export function Globe({ globeConfig, data }: WorldProps) {
         Math.floor((data.length * 4) / 5),
       );
 
-      const ringsData = data
+      const backgroundRings = data
         .filter((d, i) => newNumbersOfRings.includes(i))
         .map((d) => ({
           lat: d.startLat,
           lng: d.startLng,
           color: d.color,
         }));
+
+      const highlight = highlightRingRef.current;
+      const ringsData = highlight
+        ? [{ lat: highlight.lat, lng: highlight.lng, color: "#31d4ff" }, ...backgroundRings]
+        : backgroundRings;
 
       globeRef.current.ringsData(ringsData);
     }, 2000);
@@ -302,9 +314,7 @@ export function World(props: WorldProps) {
         minDistance={cameraZ}
         maxDistance={cameraZ}
         autoRotate={globeConfig.autoRotate ?? false}
-        autoRotateSpeed={globeConfig.autoRotateSpeed ?? 0.25}
-        minAzimuthAngle={-0.75}
-        maxAzimuthAngle={0.75}
+        autoRotateSpeed={globeConfig.autoRotateSpeed ?? 0.35}
         minPolarAngle={Math.PI / 3.5}
         maxPolarAngle={Math.PI - Math.PI / 3}
       />

@@ -8,6 +8,7 @@ import {
   useMotionValue,
   useSpring,
 } from "framer-motion"
+import Image from "next/image"
 import { Reveal } from "@/components/shared/Reveal"
 
 const images = [
@@ -107,14 +108,15 @@ function TicketCounter({ value }: { value: number }) {
 
 export function WeAre() {
   const [index, setIndex] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
 
   useEffect(() => {
+    if (isPaused) return
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length)
     }, 4000)
-
     return () => clearInterval(interval)
-  }, [])
+  }, [isPaused])
 
   return (
     <section
@@ -157,37 +159,66 @@ export function WeAre() {
             </Reveal>
           </div>
 
-          <div className="relative h-[280px] w-full min-w-0 sm:h-[420px] md:h-[520px] lg:h-[620px]">
-            <div className="absolute inset-0 overflow-hidden rounded-0  sm:rounded-xl md:rounded-lglg:rounded-2xl border border-white/10 bg-black shadow-2xl">
+          <div
+            className="relative h-[280px] w-full min-w-0 sm:h-[420px] md:h-[520px] lg:h-[620px]"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            <div className="absolute inset-0 overflow-hidden rounded-0 sm:rounded-xl md:rounded-lg lg:rounded-2xl border border-white/10 bg-black shadow-2xl">
               <AnimatePresence mode="wait">
-                <motion.img
+                <motion.div
                   key={index}
-                  src={images[index]}
-                  alt="Event"
                   initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.8 }}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+                  className="absolute inset-0"
+                >
+                  <Image
+                    src={images[index]}
+                    alt="YOSN event"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 55vw"
+                    priority={index === 0}
+                  />
+                </motion.div>
               </AnimatePresence>
 
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
             </div>
 
-            <motion.img
-              src={images[(index + 2) % images.length]}
-              className="absolute -top-2 -right-2 z-10 h-0 sm:-top-8 sm:-right-8 sm:h-40 sm:w-40 md:h-48 md:w-48"
+            <motion.div
+              className="absolute -top-2 -right-2 z-10 h-0 w-0 overflow-hidden sm:-top-8 sm:-right-8 sm:h-40 sm:w-40 md:h-48 md:w-48"
               animate={{ y: [0, -12, 0] }}
               transition={{ repeat: Infinity, duration: 5 }}
-            />
+            >
+              <div className="relative h-full w-full overflow-hidden rounded-lg">
+                <Image
+                  src={images[(index + 2) % images.length]}
+                  alt="Event highlight"
+                  fill
+                  className="object-cover"
+                  sizes="192px"
+                />
+              </div>
+            </motion.div>
 
-            <motion.img
-              src={images[(index + 4) % images.length]}
-              className="absolute -bottom-2 -left-2 z-10 h-0 sm:-bottom-8 sm:-left-8 sm:h-40 sm:w-40 md:h-48 md:w-48"
+            <motion.div
+              className="absolute -bottom-2 -left-2 z-10 h-0 w-0 overflow-hidden sm:-bottom-8 sm:-left-8 sm:h-40 sm:w-40 md:h-48 md:w-48"
               animate={{ y: [0, 12, 0] }}
               transition={{ repeat: Infinity, duration: 6 }}
-            />
+            >
+              <div className="relative h-full w-full overflow-hidden rounded-lg">
+                <Image
+                  src={images[(index + 4) % images.length]}
+                  alt="Event highlight"
+                  fill
+                  className="object-cover"
+                  sizes="192px"
+                />
+              </div>
+            </motion.div>
           </div>
         </div>
 
