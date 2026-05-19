@@ -128,7 +128,6 @@
       radial-gradient(circle at 14% 14%, rgba(49, 212, 255, 0.12), transparent 36%),
       radial-gradient(circle at 86% 8%, rgba(255, 79, 216, 0.1), transparent 34%),
       radial-gradient(circle at 50% 100%, rgba(255, 179, 71, 0.08), transparent 42%);
-    background-attachment: fixed;
   }
   h1, h2, h3 {
     font-family: var(--font-bebas-neue), sans-serif;
@@ -162,8 +161,12 @@
   }
 
   .fun-card:hover {
-    border-color: rgba(49, 212, 255, 0.4);
-    box-shadow: 0 16px 42px rgba(49, 212, 255, 0.12), 0 8px 28px rgba(255, 79, 216, 0.1);
+    border-color: rgba(49, 212, 255, 0.5);
+    box-shadow:
+      0 0 0 1px rgba(49, 212, 255, 0.12),
+      0 16px 48px rgba(49, 212, 255, 0.18),
+      0 8px 28px rgba(255, 79, 216, 0.12),
+      0 0 100px rgba(49, 212, 255, 0.07);
   }
 
   .fun-link {
@@ -227,4 +230,10 @@
 
 .animate-pulse-glow {
   animation: pulse-glow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom cursor: hide native cursor on desktop when custom one is active */
+.cursor-none-global,
+.cursor-none-global * {
+  cursor: none !important;
 }

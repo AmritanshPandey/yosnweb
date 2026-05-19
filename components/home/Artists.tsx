@@ -1,7 +1,9 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { Reveal } from "@/components/shared/Reveal"
+import { SplitHeading } from "@/components/shared/SplitHeading"
 
 const featuredArtists = [
   { name: "Max Amini", img: "/assets/artists/16.png" },
@@ -19,11 +21,10 @@ export function ArtistsPreview() {
       id="artists"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <Reveal>
-          <h2 className="heading-fun text-4xl sm:text-6xl md:text-8xl">
-            ARTISTS WE&apos;VE BROUGHT TO YOU
-          </h2>
-        </Reveal>
+        <SplitHeading
+          text="ARTISTS WE'VE BROUGHT TO YOU"
+          className="heading-fun text-4xl sm:text-6xl md:text-8xl"
+        />
 
         <Reveal delay={0.2}>
           <p className="body-fun mt-3 max-w-2xl">
@@ -36,10 +37,12 @@ export function ArtistsPreview() {
           {featuredArtists.map((artist, i) => (
             <Reveal key={artist.name} delay={i * 0.08}>
               <div className="fun-card group relative aspect-square overflow-hidden rounded-xl bg-black">
-                <img
+                <Image
                   src={artist.img}
                   alt={artist.name}
-                  className="h-full w-full object-cover transition-all duration-500 group-hover:scale-105"
+                  fill
+                  className="object-cover transition-all duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 50vw, 33vw"
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />

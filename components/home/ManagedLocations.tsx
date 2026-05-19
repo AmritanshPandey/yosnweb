@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { motion } from "framer-motion"
 import { IconMapPin } from "@tabler/icons-react"
 
@@ -9,42 +9,7 @@ import GlobeDemo from "@/components/globe-demo"
 import { cn } from "@/lib/utils"
 
 const managedLocations = [
-  {
-    city: "London",
-    country: "UK",
-    lat: 51.5074,
-    lng: -0.1278,
-  },
-  {
-    city: "Manchester",
-    country: "UK",
-    lat: 53.4808,
-    lng: -2.2426,
-  },
-  {
-    city: "Birmingham",
-    country: "UK",
-    lat: 52.4862,
-    lng: -1.8904,
-  },
-    {
-    city: "Dublin",
-    country: "Ireland",
-    lat: 53.3498,
-    lng: -6.2603,
-  },
-  {
-    city: "Amsterdam",
-    country: "Netherlands",
-    lat: 52.3676,
-    lng: 4.9041,
-  },
-  {
-    city: "Dubai",
-    country: "UAE",
-    lat: 25.2048,
-    lng: 55.2708,
-  },
+  // Mumbai first — it becomes the arc hub in buildArcs
   {
     city: "Mumbai",
     country: "India",
@@ -105,7 +70,42 @@ const managedLocations = [
     lat: 21.1702,
     lng: 72.8311,
   },
-
+  {
+    city: "Dubai",
+    country: "UAE",
+    lat: 25.2048,
+    lng: 55.2708,
+  },
+  {
+    city: "London",
+    country: "UK",
+    lat: 51.5074,
+    lng: -0.1278,
+  },
+  {
+    city: "Manchester",
+    country: "UK",
+    lat: 53.4808,
+    lng: -2.2426,
+  },
+  {
+    city: "Birmingham",
+    country: "UK",
+    lat: 52.4862,
+    lng: -1.8904,
+  },
+  {
+    city: "Dublin",
+    country: "Ireland",
+    lat: 53.3498,
+    lng: -6.2603,
+  },
+  {
+    city: "Amsterdam",
+    country: "Netherlands",
+    lat: 52.3676,
+    lng: 4.9041,
+  },
 ]
 
 export function ManagedLocations() {
@@ -114,6 +114,11 @@ export function ManagedLocations() {
   const activeLocation =
     managedLocations.find((location) => location.city === activeCity) ??
     managedLocations[0];
+
+  const globeCities = useMemo(
+    () => managedLocations.map(({ city, lat, lng }) => ({ city, lat, lng })),
+    [],
+  );
 
   return (
     <section className="overflow-hidden border-t border-white/10 bg-black py-14 text-white sm:py-20 md:py-24 page-fun relative">
@@ -219,12 +224,9 @@ export function ManagedLocations() {
 
                   <GlobeDemo
                     className="inset-0 z-[1] scale-[1.05]"
-                    cities={managedLocations.map((location) => ({
-                      city: location.city,
-                      lat: location.lat,
-                      lng: location.lng,
-                    }))}
+                    cities={globeCities}
                     initialPosition={{ lat: activeLocation.lat, lng: activeLocation.lng }}
+                    highlightRing={{ lat: activeLocation.lat, lng: activeLocation.lng }}
                   />
                   <div className="pointer-events-none absolute inset-0 h-full bg-[radial-gradient(circle_at_50%_170%,rgba(49,212,255,0.14),rgba(255,255,255,0))]" />
                 </div>
