@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
-import { useForm, FormProvider, Controller, type Resolver } from "react-hook-form"
+import { useForm, FormProvider, Controller, type Resolver, type FieldErrors } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -28,6 +28,19 @@ import {
 } from "@/components/ui/select"
 import { ImageUpload } from "@/components/admin/upload/ImageUpload"
 import { CityFieldArray } from "./CityFieldArray"
+
+function SectionHeader({ title, hasError }: { title: string; hasError: boolean }) {
+  return (
+    <div className="flex items-center gap-2">
+      <h2 className="font-display text-2xl uppercase tracking-tight text-white">{title}</h2>
+      {hasError && (
+        <span className="rounded-full bg-red-500/15 border border-red-400/30 px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] text-red-300">
+          Required
+        </span>
+      )}
+    </div>
+  )
+}
 
 type Props = {
   event?: Event
@@ -59,6 +72,8 @@ export function EventForm({ event }: Props) {
         }
       : {
           featured: false,
+          status: "coming-soon" as const,
+          category: "concert" as const,
           genres: [],
           cities: [],
           imageMeta: { width: 0, height: 0 },
@@ -68,11 +83,44 @@ export function EventForm({ event }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitted },
     watch,
     setValue,
     control,
   } = methods
+
+  // Returns true if any of the given fields have an error after a submit attempt
+  function sectionHasError(...keys: (keyof EventFormValues)[]) {
+    return isSubmitted && keys.some((k) => k in errors)
+  }
+
+  function onInvalid(errs: FieldErrors<EventFormValues>) {
+    const missing: string[] = []
+    if (errs.name || errs.slug || errs.duration || errs.ticketsFrom)
+      missing.push("basic info")
+    if (errs.category) missing.push("category")
+    if (errs.status) missing.push("status")
+    if (errs.artistId)
+      missing.push(artists.length === 0 ? "artist (create one first)" : "artist selection")
+    if (errs.genres) {
+      const pending = genreInputRef.current?.value.trim()
+      missing.push(pending ? "genres (press Enter to add the typed genre)" : "at least one genre")
+    }
+    if (errs.cities) missing.push("at least one city")
+    if (errs.heroImage) missing.push("hero image")
+
+    toast.error(
+      missing.length === 1
+        ? `Missing: ${missing[0]}`
+        : `Please complete: ${missing.join(" · ")}`,
+      { duration: 6000 },
+    )
+
+    // Scroll to the first highlighted section
+    setTimeout(() => {
+      document.querySelector(".section-error")?.scrollIntoView({ behavior: "smooth", block: "center" })
+    }, 50)
+  }
 
   const watchName = watch("name")
   const watchGenres = watch("genres") ?? []
@@ -108,14 +156,23 @@ export function EventForm({ event }: Props) {
 
   async function onSubmit(values: EventFormValues) {
     setLoading(true)
+    // Auto-commit any typed-but-not-entered genre
+    const pendingGenre = genreInputRef.current?.value.trim()
+    if (pendingGenre && !values.genres.includes(pendingGenre)) {
+      values.genres = [...values.genres, pendingGenre]
+      if (genreInputRef.current) genreInputRef.current.value = ""
+    }
     try {
       let heroImage = values.heroImage
 
       if (imageBlob && imageBlob.size > 0) {
-        toast.loading("Uploading image…")
-        const { url } = await uploadEventHero(values.slug, imageBlob)
-        heroImage = url
-        toast.dismiss()
+        const toastId = toast.loading("Uploading image…")
+        try {
+          const { url } = await uploadEventHero(values.slug, imageBlob)
+          heroImage = url
+        } finally {
+          toast.dismiss(toastId)
+        }
       }
 
       const payload: CreateEventInput = {
@@ -154,11 +211,11 @@ export function EventForm({ event }: Props) {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
 
         {/* Basic Info */}
-        <section className="fun-card rounded-2xl p-6 space-y-5">
-          <h2 className="font-display text-2xl uppercase tracking-tight text-white">Basic Info</h2>
+        <section className={`fun-card rounded-2xl p-6 space-y-5 transition-all ${sectionHasError("name", "slug", "duration", "ticketsFrom") ? "ring-1 ring-red-400/50 section-error" : ""}`}>
+          <SectionHeader title="Basic Info" hasError={sectionHasError("name", "slug", "duration", "ticketsFrom")} />
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -205,8 +262,8 @@ export function EventForm({ event }: Props) {
         </section>
 
         {/* Category & Status */}
-        <section className="fun-card rounded-2xl p-6 space-y-5">
-          <h2 className="font-display text-2xl uppercase tracking-tight text-white">Category & Status</h2>
+        <section className={`fun-card rounded-2xl p-6 space-y-5 transition-all ${sectionHasError("category", "status") ? "ring-1 ring-red-400/50 section-error" : ""}`}>
+          <SectionHeader title="Category & Status" hasError={sectionHasError("category", "status")} />
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -258,8 +315,8 @@ export function EventForm({ event }: Props) {
         </section>
 
         {/* Artist */}
-        <section className="fun-card rounded-2xl p-6 space-y-5">
-          <h2 className="font-display text-2xl uppercase tracking-tight text-white">Artist</h2>
+        <section className={`fun-card rounded-2xl p-6 space-y-5 transition-all ${sectionHasError("artistId") ? "ring-1 ring-red-400/50 section-error" : ""}`}>
+          <SectionHeader title="Artist" hasError={sectionHasError("artistId")} />
           <div className="space-y-1.5">
             <Label>Select Artist</Label>
             <Controller
@@ -291,8 +348,8 @@ export function EventForm({ event }: Props) {
         </section>
 
         {/* Genres */}
-        <section className="fun-card rounded-2xl p-6 space-y-5">
-          <h2 className="font-display text-2xl uppercase tracking-tight text-white">Genres</h2>
+        <section className={`fun-card rounded-2xl p-6 space-y-5 transition-all ${sectionHasError("genres") ? "ring-1 ring-red-400/50 section-error" : ""}`}>
+          <SectionHeader title="Genres" hasError={sectionHasError("genres")} />
           <div className="space-y-3">
             <div className="space-y-1.5">
               <Label>Add Genre (press Enter)</Label>
@@ -327,13 +384,13 @@ export function EventForm({ event }: Props) {
         </section>
 
         {/* Tour Cities */}
-        <section className="fun-card rounded-2xl p-6">
+        <section className={`fun-card rounded-2xl p-6 transition-all ${sectionHasError("cities") ? "ring-1 ring-red-400/50 section-error" : ""}`}>
           <CityFieldArray />
         </section>
 
         {/* Hero Image */}
-        <section className="fun-card rounded-2xl p-6 space-y-5">
-          <h2 className="font-display text-2xl uppercase tracking-tight text-white">Hero Image</h2>
+        <section className={`fun-card rounded-2xl p-6 space-y-5 transition-all ${sectionHasError("heroImage") ? "ring-1 ring-red-400/50 section-error" : ""}`}>
+          <SectionHeader title="Hero Image" hasError={sectionHasError("heroImage")} />
           <ImageUpload
             value={event?.heroImage}
             onChange={(url, meta) => {
@@ -348,28 +405,35 @@ export function EventForm({ event }: Props) {
         </section>
 
         {/* Submit */}
-        <div className="flex justify-end gap-3 pb-8">
-          <Button
-            type="button"
-            variant="ghost"
-            size="lg"
-            onClick={() => router.push("/admin/events")}
-            disabled={loading}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" size="lg" disabled={loading}>
-            {loading ? (
-              <>
-                <IconLoader2 size={16} className="animate-spin" />
-                Saving…
-              </>
-            ) : event ? (
-              "Update Event"
-            ) : (
-              "Create Event"
-            )}
-          </Button>
+        <div className="flex flex-col items-end gap-3 pb-8">
+          {isSubmitted && Object.keys(errors).length > 0 && (
+            <p className="text-xs text-red-400">
+              {Object.keys(errors).length} field{Object.keys(errors).length > 1 ? "s need" : " needs"} attention — check the highlighted sections above
+            </p>
+          )}
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              variant="ghost"
+              size="lg"
+              onClick={() => router.push("/admin/events")}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" size="lg" disabled={loading}>
+              {loading ? (
+                <>
+                  <IconLoader2 size={16} className="animate-spin" />
+                  Saving…
+                </>
+              ) : event ? (
+                "Update Event"
+              ) : (
+                "Create Event"
+              )}
+            </Button>
+          </div>
         </div>
       </form>
     </FormProvider>

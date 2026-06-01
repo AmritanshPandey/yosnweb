@@ -10,6 +10,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  deleteField,
   type DocumentData,
   type QueryDocumentSnapshot,
 } from "firebase/firestore"
@@ -49,6 +50,18 @@ export async function getArtistById(id: string): Promise<Artist | null> {
   return fromDoc(snap as QueryDocumentSnapshot<DocumentData>)
 }
 
+export async function getArtistsByIds(ids: string[]): Promise<Map<string, Artist>> {
+  if (ids.length === 0) return new Map()
+  const db = getClientDb()
+  const unique = [...new Set(ids)]
+  const snaps = await Promise.all(unique.map((id) => getDoc(doc(db, COLLECTION, id))))
+  const map = new Map<string, Artist>()
+  for (const snap of snaps) {
+    if (snap.exists()) map.set(snap.id, fromDoc(snap as QueryDocumentSnapshot<DocumentData>))
+  }
+  return map
+}
+
 export async function getArtistBySlug(slug: string): Promise<Artist | null> {
   const db = getClientDb()
   const q = query(collection(db, COLLECTION), where("slug", "==", slug))
@@ -61,8 +74,12 @@ export type CreateArtistInput = Omit<Artist, "id" | "createdAt">
 
 export async function createArtist(input: CreateArtistInput): Promise<string> {
   const db = getClientDb()
+  // Strip undefined — Firestore rejects undefined field values
+  const data = Object.fromEntries(
+    Object.entries(input).filter(([, v]) => v !== undefined)
+  )
   const docRef = await addDoc(collection(db, COLLECTION), {
-    ...input,
+    ...data,
     createdAt: serverTimestamp(),
   })
   return docRef.id
@@ -70,7 +87,11 @@ export async function createArtist(input: CreateArtistInput): Promise<string> {
 
 export async function updateArtist(id: string, input: Partial<CreateArtistInput>): Promise<void> {
   const db = getClientDb()
-  await updateDoc(doc(db, COLLECTION, id), input)
+  // undefined means the user cleared the field — use deleteField() to remove it from Firestore
+  const data = Object.fromEntries(
+    Object.entries(input).map(([k, v]) => [k, v === undefined ? deleteField() : v])
+  )
+  await updateDoc(doc(db, COLLECTION, id), data)
 }
 
 export async function deleteArtist(id: string): Promise<void> {

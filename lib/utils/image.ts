@@ -1,35 +1,21 @@
 import imageCompression from "browser-image-compression"
 
-export type ImageValidationError =
-  | "FILE_TOO_LARGE"
-  | "INVALID_TYPE"
-  | "BELOW_MIN_SIZE"
-  | "INVALID_RATIO"
+export type ImageValidationError = "FILE_TOO_LARGE" | "INVALID_TYPE"
 
 export type AllowedRatio = "4:5" | "16:9"
 
 export type ImageValidationResult =
-  | { ok: true; width: number; height: number; ratio: AllowedRatio }
+  | { ok: true; width: number; height: number }
   | { ok: false; error: ImageValidationError; message: string }
 
-const ALLOWED_TYPES = ["image/webp", "image/jpeg", "image/png"]
-const MAX_FILE_BYTES = 2 * 1024 * 1024 // 2 MB
-const MIN_WIDTH = 1200
-const MIN_HEIGHT = 1600
-
-function detectRatio(width: number, height: number): AllowedRatio | null {
-  const ratio = width / height
-  if (Math.abs(ratio - 4 / 5) < 0.02) return "4:5"
-  if (Math.abs(ratio - 16 / 9) < 0.02) return "16:9"
-  return null
-}
+const MAX_FILE_BYTES = 10 * 1024 * 1024 // 10 MB
 
 export async function validateImage(file: File): Promise<ImageValidationResult> {
-  if (!ALLOWED_TYPES.includes(file.type)) {
+  if (!file.type.startsWith("image/")) {
     return {
       ok: false,
       error: "INVALID_TYPE",
-      message: "Only WebP, JPEG, and PNG images are allowed.",
+      message: "Please select an image file (JPEG, PNG, WebP, HEIC, etc.).",
     }
   }
 
@@ -37,30 +23,12 @@ export async function validateImage(file: File): Promise<ImageValidationResult> 
     return {
       ok: false,
       error: "FILE_TOO_LARGE",
-      message: "Image must be under 2 MB.",
+      message: "Image must be under 10 MB.",
     }
   }
 
   const { width, height } = await getImageDimensions(file)
-
-  if (width < MIN_WIDTH || height < MIN_HEIGHT) {
-    return {
-      ok: false,
-      error: "BELOW_MIN_SIZE",
-      message: `Image must be at least ${MIN_WIDTH}×${MIN_HEIGHT}px. Yours is ${width}×${height}px.`,
-    }
-  }
-
-  const ratio = detectRatio(width, height)
-  if (!ratio) {
-    return {
-      ok: false,
-      error: "INVALID_RATIO",
-      message: "Image must be in 4:5 or 16:9 aspect ratio.",
-    }
-  }
-
-  return { ok: true, width, height, ratio }
+  return { ok: true, width, height }
 }
 
 export function getImageDimensions(file: File | Blob): Promise<{ width: number; height: number }> {
@@ -118,6 +86,66 @@ export async function cropImageToBlob(
             reject(new Error("Canvas toBlob failed"))
             return
           }
+          resolve(blob)
+        },
+        "image/webp",
+        0.9,
+      )
+    }
+    img.onerror = () => reject(new Error("Image load failed"))
+    img.src = imageUrl
+  })
+}
+
+export type BgStyle = "blur" | "dark" | "black"
+
+const FIT_DIMENSIONS: Record<AllowedRatio, { w: number; h: number }> = {
+  "16:9": { w: 1600, h: 900 },
+  "4:5":  { w: 800,  h: 1000 },
+}
+
+export async function fitImageWithBackground(
+  imageUrl: string,
+  targetRatio: AllowedRatio,
+  bgStyle: BgStyle,
+): Promise<Blob> {
+  const { w: targetW, h: targetH } = FIT_DIMENSIONS[targetRatio]
+
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement("canvas")
+      canvas.width = targetW
+      canvas.height = targetH
+      const ctx = canvas.getContext("2d")
+      if (!ctx) { reject(new Error("Canvas context unavailable")); return }
+
+      if (bgStyle === "blur") {
+        // Scale image to cover the canvas, then blur + darken it as background
+        const coverScale = Math.max(targetW / img.naturalWidth, targetH / img.naturalHeight)
+        const bgW = img.naturalWidth * coverScale
+        const bgH = img.naturalHeight * coverScale
+        const bgX = (targetW - bgW) / 2
+        const bgY = (targetH - bgH) / 2
+        ctx.filter = "blur(22px) brightness(0.35)"
+        ctx.drawImage(img, bgX - 30, bgY - 30, bgW + 60, bgH + 60) // overdraw to hide blur edges
+        ctx.filter = "none"
+      } else {
+        ctx.fillStyle = bgStyle === "dark" ? "#111111" : "#000000"
+        ctx.fillRect(0, 0, targetW, targetH)
+      }
+
+      // Scale image to contain (fit fully inside canvas), centered
+      const containScale = Math.min(targetW / img.naturalWidth, targetH / img.naturalHeight)
+      const fgW = img.naturalWidth * containScale
+      const fgH = img.naturalHeight * containScale
+      const fgX = (targetW - fgW) / 2
+      const fgY = (targetH - fgH) / 2
+      ctx.drawImage(img, fgX, fgY, fgW, fgH)
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) { reject(new Error("Canvas toBlob failed")); return }
           resolve(blob)
         },
         "image/webp",

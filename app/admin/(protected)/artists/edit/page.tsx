@@ -1,21 +1,22 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { Suspense, useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { IconChevronLeft } from "@tabler/icons-react"
 import { getArtistById } from "@/lib/firebase/artists"
 import type { Artist } from "@/types"
 import { ArtistForm } from "@/components/admin/artists/ArtistForm"
 
-export default function EditArtistPage() {
-  const { id } = useParams<{ id: string }>()
+function EditArtistContent() {
+  const searchParams = useSearchParams()
+  const id = searchParams.get("id")
   const [artist, setArtist] = useState<Artist | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    if (!id) return
+    if (!id) { setError(true); setLoading(false); return }
     getArtistById(id)
       .then((data) => {
         if (!data) setError(true)
@@ -64,5 +65,18 @@ export default function EditArtistPage() {
 
       <ArtistForm artist={artist} />
     </div>
+  )
+}
+
+export default function EditArtistPage() {
+  return (
+    <Suspense fallback={
+      <div className="space-y-4">
+        <div className="h-8 w-48 animate-pulse rounded bg-white/10" />
+        <div className="h-64 animate-pulse rounded-2xl bg-white/5" />
+      </div>
+    }>
+      <EditArtistContent />
+    </Suspense>
   )
 }

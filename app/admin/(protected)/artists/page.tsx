@@ -148,7 +148,7 @@ export default function AdminArtistsPage() {
 
               {/* Actions */}
               <div className="flex items-center gap-2">
-                <Link href={`/admin/artists/${artist.id}`}>
+                <Link href={`/admin/artists/edit?id=${artist.id}`}>
                   <button className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-white/40 transition-colors hover:border-cyan-300/30 hover:bg-cyan-300/8 hover:text-cyan-200">
                     <IconEdit size={15} />
                   </button>

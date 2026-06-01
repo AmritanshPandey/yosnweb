@@ -13,7 +13,7 @@ import {
 } from "@tabler/icons-react"
 import { Reveal } from "@/components/shared/Reveal"
 import { getAllEvents } from "@/lib/firebase/events"
-import { getArtistById } from "@/lib/firebase/artists"
+import { getArtistsByIds } from "@/lib/firebase/artists"
 import type { Event, Artist } from "@/types"
 import { STATUS_LABELS, STATUS_COLORS, CATEGORY_LABELS } from "@/types"
 
@@ -54,21 +54,21 @@ export default function EventsPage() {
       try {
         const all = await getAllEvents()
 
-        // Attach artist data to each event
-        const withArtists = await Promise.all(
-          all.map(async (event) => {
-            if (!event.artistId) return event
-            const artist = await getArtistById(event.artistId).catch(() => undefined)
-            return { ...event, artist: artist ?? undefined }
-          }),
-        )
-
-        // Featured events first, then by createdAt
-        withArtists.sort((a, b) => {
+        // Featured first, then creation order
+        all.sort((a, b) => {
           if (a.featured && !b.featured) return -1
           if (!a.featured && b.featured) return 1
           return 0
         })
+
+        // Batch-fetch only unique artist IDs in parallel
+        const uniqueIds = [...new Set(all.map((e) => e.artistId).filter(Boolean))]
+        const artistMap = await getArtistsByIds(uniqueIds)
+
+        const withArtists: EventWithArtist[] = all.map((event) => ({
+          ...event,
+          artist: event.artistId ? artistMap.get(event.artistId) : undefined,
+        }))
 
         setEvents(withArtists)
       } catch (err) {
@@ -317,9 +317,9 @@ export default function EventsPage() {
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {hero.cities.map((city) => (
+                    {hero.cities.map((city, i) => (
                       <div
-                        key={city.name + city.date}
+                        key={`${city.name}-${city.date}-${i}`}
                         className={`fun-card rounded-xl border border-white/10 p-4 ${city.soldOut ? "opacity-50" : ""}`}
                       >
                         <p className="text-[10px] uppercase tracking-[0.22em] text-cyan-200/85">

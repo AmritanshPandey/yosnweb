@@ -16,8 +16,8 @@ export const artistSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must be lowercase with hyphens only"),
   handle: z
     .string()
-    .min(1, "Handle is required")
-    .regex(/^@/, "Handle must start with @"),
+    .min(2, "Handle must include a name after @ (e.g. @artist)")
+    .regex(/^@[a-zA-Z0-9_.]+$/, "Handle must start with @ followed by letters, numbers, _ or ."),
   profileImage: z.string().min(1, "Profile image is required"),
   bio: z.string().optional(),
   instagram: optionalUrl,

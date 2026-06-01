@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useForm, Controller, type Resolver } from "react-hook-form"
+import { useForm, Controller, type Resolver, type FieldErrors } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -21,6 +21,19 @@ import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { ImageUpload } from "@/components/admin/upload/ImageUpload"
 
+function SectionHeader({ title, hasError }: { title: string; hasError: boolean }) {
+  return (
+    <div className="flex items-center gap-2">
+      <h2 className="font-display text-2xl uppercase tracking-tight text-white">{title}</h2>
+      {hasError && (
+        <span className="rounded-full bg-red-500/15 border border-red-400/30 px-2 py-0.5 text-[10px] uppercase tracking-[0.15em] text-red-300">
+          Required
+        </span>
+      )}
+    </div>
+  )
+}
+
 type Props = {
   artist?: Artist
 }
@@ -33,7 +46,7 @@ export function ArtistForm({ artist }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitted },
     watch,
     setValue,
     control,
@@ -69,16 +82,43 @@ export function ArtistForm({ artist }: Props) {
     }
   }, [watchName, artist, setValue])
 
+  function sectionHasError(...keys: (keyof ArtistFormValues)[]) {
+    return isSubmitted && keys.some((k) => k in errors)
+  }
+
+  function onInvalid(errs: FieldErrors<ArtistFormValues>) {
+    const missing: string[] = []
+    if (errs.name || errs.slug) missing.push("artist name")
+    if (errs.handle) missing.push("handle (e.g. @artist)")
+    if (errs.profileImage) missing.push("profile image — upload and confirm crop")
+    if (errs.instagram || errs.youtube || errs.spotify)
+      missing.push("social links — must be full URLs starting with https://")
+
+    toast.error(
+      missing.length === 1
+        ? `Missing: ${missing[0]}`
+        : `Please complete: ${missing.join(" · ")}`,
+      { duration: 6000 },
+    )
+
+    setTimeout(() => {
+      document.querySelector(".section-error")?.scrollIntoView({ behavior: "smooth", block: "center" })
+    }, 50)
+  }
+
   async function onSubmit(values: ArtistFormValues) {
     setLoading(true)
     try {
       let profileImage = values.profileImage
 
       if (imageBlob && imageBlob.size > 0) {
-        toast.loading("Uploading profile image…")
-        const { url } = await uploadArtistProfile(values.slug, imageBlob)
-        profileImage = url
-        toast.dismiss()
+        const toastId = toast.loading("Uploading profile image…")
+        try {
+          const { url } = await uploadArtistProfile(values.slug, imageBlob)
+          profileImage = url
+        } finally {
+          toast.dismiss(toastId)
+        }
       }
 
       const payload: CreateArtistInput = {
@@ -111,11 +151,11 @@ export function ArtistForm({ artist }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-8">
 
       {/* Profile */}
-      <section className="fun-card rounded-2xl p-6 space-y-5">
-        <h2 className="font-display text-2xl uppercase tracking-tight text-white">Profile</h2>
+      <section className={`fun-card rounded-2xl p-6 space-y-5 transition-all ${sectionHasError("name", "slug", "handle") ? "ring-1 ring-red-400/50 section-error" : ""}`}>
+        <SectionHeader title="Profile" hasError={sectionHasError("name", "slug", "handle")} />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -152,7 +192,7 @@ export function ArtistForm({ artist }: Props) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="a-bio">Bio</Label>
+          <Label htmlFor="a-bio">Bio <span className="text-white/30">(optional)</span></Label>
           <Textarea
             id="a-bio"
             {...register("bio")}
@@ -164,8 +204,9 @@ export function ArtistForm({ artist }: Props) {
       </section>
 
       {/* Social Links */}
-      <section className="fun-card rounded-2xl p-6 space-y-5">
-        <h2 className="font-display text-2xl uppercase tracking-tight text-white">Social Links</h2>
+      <section className={`fun-card rounded-2xl p-6 space-y-5 transition-all ${sectionHasError("instagram", "youtube", "spotify") ? "ring-1 ring-red-400/50 section-error" : ""}`}>
+        <SectionHeader title="Social Links" hasError={sectionHasError("instagram", "youtube", "spotify")} />
+        <p className="text-xs text-white/35 -mt-2">All optional — must be full URLs starting with https://</p>
 
         <div className="space-y-3">
           <div className="space-y-1.5">
@@ -207,8 +248,8 @@ export function ArtistForm({ artist }: Props) {
       </section>
 
       {/* Profile Image */}
-      <section className="fun-card rounded-2xl p-6 space-y-5">
-        <h2 className="font-display text-2xl uppercase tracking-tight text-white">Profile Image</h2>
+      <section className={`fun-card rounded-2xl p-6 space-y-5 transition-all ${sectionHasError("profileImage") ? "ring-1 ring-red-400/50 section-error" : ""}`}>
+        <SectionHeader title="Profile Image" hasError={sectionHasError("profileImage")} />
         {artist?.profileImage && !imageBlob && (
           <div className="relative h-20 w-20 overflow-hidden rounded-full border border-white/20">
             <Image src={artist.profileImage} alt={artist.name} fill className="object-cover" />
@@ -227,28 +268,35 @@ export function ArtistForm({ artist }: Props) {
       </section>
 
       {/* Submit */}
-      <div className="flex justify-end gap-3 pb-8">
-        <Button
-          type="button"
-          variant="ghost"
-          size="lg"
-          onClick={() => router.push("/admin/artists")}
-          disabled={loading}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" size="lg" disabled={loading}>
-          {loading ? (
-            <>
-              <IconLoader2 size={16} className="animate-spin" />
-              Saving…
-            </>
-          ) : artist ? (
-            "Update Artist"
-          ) : (
-            "Create Artist"
-          )}
-        </Button>
+      <div className="flex flex-col items-end gap-3 pb-8">
+        {isSubmitted && Object.keys(errors).length > 0 && (
+          <p className="text-xs text-red-400">
+            {Object.keys(errors).length} field{Object.keys(errors).length > 1 ? "s need" : " needs"} attention — check the highlighted sections above
+          </p>
+        )}
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="ghost"
+            size="lg"
+            onClick={() => router.push("/admin/artists")}
+            disabled={loading}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" size="lg" disabled={loading}>
+            {loading ? (
+              <>
+                <IconLoader2 size={16} className="animate-spin" />
+                Saving…
+              </>
+            ) : artist ? (
+              "Update Artist"
+            ) : (
+              "Create Artist"
+            )}
+          </Button>
+        </div>
       </div>
     </form>
   )
