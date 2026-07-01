@@ -18,38 +18,44 @@ import { SplitHeading } from "@/components/shared/SplitHeading"
 //   With 6 highlights + 28 normal = 52 cells = 13 full rows. ✓
 // ────────────────────────────────────────────────────────────────────────────
 const GALLERY: { src: string; highlight?: true }[] = [
-  { src: "/assets/events/event1.jpg" },
-  { src: "/assets/events/event2.jpg" },
+  { src: "/assets/events/38.png", highlight: true },
+  { src: "/assets/events/event1.jpg", highlight: true },
   { src: "/assets/events/event3.jpg", highlight: true },
-  { src: "/assets/events/event4.jpg" },
-  { src: "/assets/events/event5.jpg" },
-  { src: "/assets/events/event6.jpg" },
-  { src: "/assets/events/event7.jpg" },
-  { src: "/assets/events/event8.jpg" },
+  { src: "/assets/events/event6.jpg", highlight: true },
+
+  { src: "/assets/events/event32.jpg", highlight: true },
+  { src: "/assets/events/event34.jpg", highlight: true },
+  { src: "/assets/events/event8.jpg", highlight: true },
+
   { src: "/assets/events/event9.jpg", highlight: true },
+  { src: "/assets/events/event20.jpg", highlight: true },
+  { src: "/assets/events/event22.jpg", highlight: true },
+  { src: "/assets/events/event23.jpg", highlight: true },
+  { src: "/assets/events/event29.jpg", highlight: true },
+  { src: "/assets/events/event2.jpg" },
+  { src: "/assets/events/event4.jpg" },
+  { src: "/assets/events/event7.jpg" },
+
+
   { src: "/assets/events/event10.jpg" },
   { src: "/assets/events/event11.jpg" },
   { src: "/assets/events/event12.jpg" },
   { src: "/assets/events/event13.jpg" },
   { src: "/assets/events/event14.jpg" },
-  { src: "/assets/events/event15.jpg", highlight: true },
+  { src: "/assets/events/event15.jpg" },
   { src: "/assets/events/event17.jpg" },
   { src: "/assets/events/event18.jpg" },
   { src: "/assets/events/event19.jpg" },
-  { src: "/assets/events/event20.jpg" },
-  { src: "/assets/events/event21.jpg", highlight: true },
-  { src: "/assets/events/event22.jpg" },
-  { src: "/assets/events/event23.jpg" },
+
   { src: "/assets/events/event24.jpg" },
   { src: "/assets/events/event25.jpg" },
   { src: "/assets/events/event26.jpg" },
-  { src: "/assets/events/event27.jpg", highlight: true },
+  { src: "/assets/events/event27.jpg" },
   { src: "/assets/events/event28.jpg" },
-  { src: "/assets/events/event29.jpg" },
+
   { src: "/assets/events/event30.jpg" },
   { src: "/assets/events/event31.jpg" },
-  { src: "/assets/events/event32.jpg" , highlight: true },
-  { src: "/assets/events/event34.jpg" },
+
 ]
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -210,7 +216,7 @@ export function PastEvents() {
         })
         setEvents(data)
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false))
   }, [])
 
@@ -269,7 +275,7 @@ export function PastEvents() {
               className="heading-fun text-4xl sm:text-6xl md:text-8xl"
             />
             <p className="body-fun mb-10 mt-3">
-              34 events. Thousands of memories. Every single one a full house.
+              More than 250 events. Thousands of memories. Every single one a full house.
             </p>
           </Reveal>
 
@@ -281,20 +287,20 @@ export function PastEvents() {
                 className={photo.highlight ? "col-span-2" : "col-span-1"}
               >
                 <div
-                  className={`group relative overflow-hidden rounded-xl ${
-                    photo.highlight
-                      ? "ring-1 ring-cyan-300/30 shadow-[0_0_28px_rgba(49,212,255,0.10)]"
-                      : ""
-                  }`}
+                  className={`group relative overflow-hidden rounded-xl ${photo.highlight
+                    ? "ring-1 ring-cyan-300/30 shadow-[0_0_28px_rgba(49,212,255,0.10)]"
+                    : ""
+                    }`}
                 >
-                  <Image
-                    src={photo.src}
-                    alt={`YOSN event night ${i + 1}`}
-                    width={600}
-                    height={800}
-                    className="w-full h-auto transition-transform duration-500 group-hover:scale-105"
-                    sizes={photo.highlight ? "(max-width: 640px) 100vw, 50vw" : "(max-width: 640px) 50vw, 25vw"}
-                  />
+                  <div className="relative w-full aspect-square overflow-hidden">
+                    <Image
+                      src={photo.src}
+                      alt={`YOSN event night ${i + 1}`}
+                      fill
+                      className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                      sizes={photo.highlight ? "(max-width: 640px) 100vw, 50vw" : "(max-width: 640px) 50vw, 25vw"}
+                    />
+                  </div>
                   <div className="absolute inset-0 bg-black/10 transition-all duration-300 group-hover:bg-black/0" />
                   {photo.highlight && (
                     <div className="absolute right-3 top-3">

@@ -46,6 +46,11 @@ const artistData = {
         { name: "Amandeep Khayal", img: "/assets/artists/23.png" },
         { name: "Ashish Bagrecha", img: "/assets/artists/24.png" },
     ],
+
+    dancecrew: [
+        { name: "Quick Style", img: "/assets/artists/32.jpeg" },
+
+    ],
 }
 
 export default function Page() {
@@ -112,6 +117,18 @@ export default function Page() {
                             Storyteller
                         </TabsTrigger>
 
+                        <TabsTrigger
+                            value="dancecrew"
+                            className="px-4 py-2 text-xs font-medium uppercase tracking-widest
+              text-white/50 hover:text-cyan-200 hover:bg-white/5
+              data-[state=active]:!text-black
+              data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-300 data-[state=active]:to-fuchsia-300
+              data-[state=active]:shadow-[0_8px_22px_rgba(49,212,255,0.32)]
+              transition-all duration-300 sm:px-6 sm:text-sm"
+                        >
+                            Dance Crew
+                        </TabsTrigger>
+
                     </TabsList>
 
                     <TabsContent value="musician">
@@ -124,6 +141,9 @@ export default function Page() {
 
                     <TabsContent value="storyteller">
                         <ArtistGrid artists={artistData.storyteller} />
+                    </TabsContent>
+                     <TabsContent value="dancecrew">
+                        <ArtistGrid artists={artistData.dancecrew} />
                     </TabsContent>
 
                 </Tabs>

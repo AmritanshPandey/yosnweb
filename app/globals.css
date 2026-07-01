@@ -203,9 +203,8 @@
 }
 
 @keyframes zoomHero {
-  0% { transform: scale(1.05); }
-  50% { transform: scale(1.12); }
-  100% { transform: scale(1.05); }
+  0%, 100% { transform: scale(1.02); }
+  50% { transform: scale(1.05); }
 }
 
 @keyframes marquee {

@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { Reveal } from "@/components/shared/Reveal"
@@ -17,6 +18,32 @@ const gallery = Array.from({ length: 12 }, (_, i) => ({
 }))
 
 export default function Page() {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const tryPlay = async () => {
+      try {
+        video.muted = true
+        await video.play()
+      } catch (error) {
+        console.warn("Hero video autoplay failed:", error)
+      }
+    }
+
+    if (video.readyState >= 2) {
+      void tryPlay()
+    } else {
+      video.addEventListener("canplay", tryPlay, { once: true })
+    }
+
+    return () => {
+      video.removeEventListener("canplay", tryPlay)
+    }
+  }, [])
+
   return (
     <main className="bg-black text-white pt-20 sm:pt-24 page-fun">
 
@@ -24,13 +51,16 @@ export default function Page() {
       <section className="relative h-[calc(100vh-5rem)] overflow-hidden sm:h-[calc(100vh-6rem)]">
 
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
+          disablePictureInPicture
           poster="/assets/banners/banner.png"
-          className="absolute inset-0 w-full h-full object-cover scale-105 animate-[zoomHero_18s_linear_infinite]"
+          className="absolute inset-0 h-full w-full object-cover scale-105 will-change-transform motion-safe:animate-[zoomHero_18s_linear_infinite]"
+          style={{ transform: "translateZ(0)" }}
         >
           <source src="/assets/banners/banner.webm" type="video/webm" />
           <source src="/assets/banners/banner.mp4" type="video/mp4" />

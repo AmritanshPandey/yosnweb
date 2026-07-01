@@ -4,7 +4,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import {
   IconMapPin,
-  IconPhone,
+  IconMail,
   IconBrandInstagram,
   IconArrowUpRight,
 } from "@tabler/icons-react"
@@ -41,10 +41,12 @@ export function Footer() {
           <SplitHeading
             text="LET'S TALK"
             as="h2"
-            className="font-display text-[18vw] uppercase leading-none tracking-tight text-transparent sm:text-[14vw] md:text-[12vw]"
+            className="font-display text-[18vw] uppercase leading-none tracking-[0.08em] text-transparent sm:text-[14vw] md:text-[12vw]"
             style={
               {
-                WebkitTextStroke: "1px rgba(255,255,255,0.15)",
+                WebkitTextStroke: "1.4px rgba(255,255,255,0.9)",
+                WebkitTextFillColor: "transparent",
+                textShadow: "0 0 24px rgba(49, 212, 255, 0.12)",
               } as React.CSSProperties
             }
           />
@@ -52,11 +54,11 @@ export function Footer() {
           <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
             <MagneticButton strength={0.2}>
               <a
-                href="tel:8850904733"
+                href="mailto:info@yosn.events"
                 className="inline-flex items-center gap-2 border border-white/20 bg-gradient-to-r from-cyan-300 to-fuchsia-300 px-7 py-3.5 text-xs font-medium uppercase tracking-widest text-black shadow-[0_8px_40px_rgba(49,212,255,0.3)] transition-all duration-300 hover:shadow-[0_12px_50px_rgba(49,212,255,0.5)]"
               >
-                <IconPhone size={15} />
-                +91 88509 04733
+                <IconMail size={15} />
+                info@yosn.events
               </a>
             </MagneticButton>
 
@@ -102,12 +104,12 @@ export function Footer() {
             </div>
 
             <div className="flex items-center gap-3">
-              <IconPhone size={16} className="shrink-0 text-white/35" />
+              <IconMail size={16} className="shrink-0 text-white/35" />
               <a
-                href="tel:8850904733"
+                href="mailto:info@yosn.events"
                 className="text-white/45 transition-colors duration-200 hover:text-cyan-300"
               >
-                +91 88509 04733
+                info@yosn.events
               </a>
             </div>
 

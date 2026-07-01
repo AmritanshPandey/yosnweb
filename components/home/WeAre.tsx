@@ -34,10 +34,24 @@ const stats = [
   { value: 20, label: "Brands" },
 ]
 
-const LIVE_TICKET_COUNT = 211585
+const LIVE_TICKET_BASE_COUNT = 212785
 const LIVE_TICKET_START = 211570
+const LIVE_TICKET_INCREMENT_PER_DAY = 50
+const LIVE_TICKET_START_DATE = new Date("2026-07-01T00:00:00.000Z")
 const ticketCountFormatter = new Intl.NumberFormat("en-IN")
 const marqueeText = "CREATE · ELEVATE · CELEBRATE · YOSN · "
+
+function getLiveTicketCount() {
+  const startDate = new Date(LIVE_TICKET_START_DATE)
+  const now = new Date()
+  const dayDiff = Math.floor(
+    (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) -
+      Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())) /
+      86400000
+  )
+
+  return LIVE_TICKET_BASE_COUNT + dayDiff * LIVE_TICKET_INCREMENT_PER_DAY
+}
 
 function Counter({ value }: { value: number }) {
   const ref = useRef(null)
@@ -109,6 +123,7 @@ function TicketCounter({ value }: { value: number }) {
 export function WeAre() {
   const [index, setIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
+  const [liveTicketCount, setLiveTicketCount] = useState(() => getLiveTicketCount())
 
   useEffect(() => {
     if (isPaused) return
@@ -117,6 +132,16 @@ export function WeAre() {
     }, 4000)
     return () => clearInterval(interval)
   }, [isPaused])
+
+  useEffect(() => {
+    setLiveTicketCount(getLiveTicketCount())
+
+    const interval = window.setInterval(() => {
+      setLiveTicketCount(getLiveTicketCount())
+    }, 60_000)
+
+    return () => window.clearInterval(interval)
+  }, [])
 
   return (
     <section
@@ -247,7 +272,7 @@ export function WeAre() {
               <div className="relative">
                 <div className="relative overflow-hidden rounded-xl border border-white/10 bg-black px-5 py-5 md:px-7">
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,79,216,0.14),_transparent_40%)]" />
-                  <TicketCounter value={LIVE_TICKET_COUNT} />
+                  <TicketCounter value={liveTicketCount} />
 
                   <div className="mt-3 flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-white/40">
                     <span>Tickets</span>
