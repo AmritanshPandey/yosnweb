@@ -121,15 +121,38 @@ export async function fitImageWithBackground(
       if (!ctx) { reject(new Error("Canvas context unavailable")); return }
 
       if (bgStyle === "blur") {
-        // Scale image to cover the canvas, then blur + darken it as background
+        // Scale image to cover the canvas, then blur + darken it as background.
+        // Note: ctx.filter (blur/brightness) isn't reliably supported in all
+        // browsers (notably older Safari), where it silently no-ops and leaves
+        // a sharp, unblurred image behind the foreground. Instead, blur is
+        // simulated by downscaling then upscaling through a small offscreen
+        // canvas, which works everywhere.
         const coverScale = Math.max(targetW / img.naturalWidth, targetH / img.naturalHeight)
         const bgW = img.naturalWidth * coverScale
         const bgH = img.naturalHeight * coverScale
         const bgX = (targetW - bgW) / 2
         const bgY = (targetH - bgH) / 2
-        ctx.filter = "blur(22px) brightness(0.35)"
-        ctx.drawImage(img, bgX - 30, bgY - 30, bgW + 60, bgH + 60) // overdraw to hide blur edges
-        ctx.filter = "none"
+
+        const smallScale = 1 / 20
+        const smallCanvas = document.createElement("canvas")
+        smallCanvas.width = Math.max(1, Math.round(targetW * smallScale))
+        smallCanvas.height = Math.max(1, Math.round(targetH * smallScale))
+        const smallCtx = smallCanvas.getContext("2d")
+        if (!smallCtx) { reject(new Error("Canvas context unavailable")); return }
+        smallCtx.drawImage(
+          img,
+          (bgX - 30) * smallScale,
+          (bgY - 30) * smallScale,
+          (bgW + 60) * smallScale,
+          (bgH + 60) * smallScale,
+        )
+
+        ctx.imageSmoothingEnabled = true
+        ctx.drawImage(smallCanvas, 0, 0, targetW, targetH)
+
+        // Darken the blurred background
+        ctx.fillStyle = "rgba(0, 0, 0, 0.65)"
+        ctx.fillRect(0, 0, targetW, targetH)
       } else {
         ctx.fillStyle = bgStyle === "dark" ? "#111111" : "#000000"
         ctx.fillRect(0, 0, targetW, targetH)
