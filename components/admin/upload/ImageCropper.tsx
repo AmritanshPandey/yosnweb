@@ -215,6 +215,7 @@ export function ImageCropper({
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={handleCropChange}
+              mediaProps={{ crossOrigin: "anonymous" }}
               style={{
                 containerStyle: { borderRadius: "0.75rem" },
                 mediaStyle: {},

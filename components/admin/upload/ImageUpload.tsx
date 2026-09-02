@@ -101,6 +101,14 @@ export function ImageUpload({
     setRawUrl(null)
   }
 
+  // Re-open the already-uploaded image (e.g. a Cloudinary URL) in the cropper
+  // instead of requiring the admin to pick the file from disk again.
+  function handleEditCurrent() {
+    if (!previewUrl) return
+    setRawUrl(previewUrl)
+    setCropping(true)
+  }
+
   function handleRemove() {
     if (previewUrl) URL.revokeObjectURL(previewUrl)
     setPreviewUrl(null)
@@ -159,16 +167,28 @@ export function ImageUpload({
                 {meta.width}×{meta.height}px
               </p>
             )}
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => fileRef.current?.click()}
-              className="w-fit gap-2 border border-white/15"
-            >
-              <IconCrop size={14} />
-              Replace Image
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleEditCurrent}
+                className="w-fit gap-2 border border-white/15"
+              >
+                <IconCrop size={14} />
+                Re-crop Current
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => fileRef.current?.click()}
+                className="w-fit gap-2 border border-white/15"
+              >
+                <IconUpload size={14} />
+                Replace Image
+              </Button>
+            </div>
 
             {previewUrl && eventName !== undefined && (
               <SafeAreaPreview imageUrl={previewUrl} eventName={eventName} cities={cities} />
