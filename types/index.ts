@@ -25,6 +25,10 @@ export type Event = {
   status: EventStatus
   heroImage: string
   imageMeta: EventImageMeta
+  // "contain" (letterboxed over a blurred/dark/black backdrop, rendered live
+  // with CSS) vs "cover" (default: fills the frame, cropping as needed).
+  heroImageFit?: "cover" | "contain"
+  heroImageBg?: "blur" | "dark" | "black"
   duration: string
   genres: string[]
   ticketsFrom: string

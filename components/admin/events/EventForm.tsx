@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ImageUpload } from "@/components/admin/upload/ImageUpload"
+import type { ImageDisplay } from "@/components/admin/upload/ImageCropper"
 import { CityFieldArray } from "./CityFieldArray"
 
 function SectionHeader({ title, hasError }: { title: string; hasError: boolean }) {
@@ -50,6 +51,10 @@ export function EventForm({ event }: Props) {
   const router = useRouter()
   const [artists, setArtists] = useState<Artist[]>([])
   const [imageBlob, setImageBlob] = useState<Blob | null>(null)
+  const [imageDisplay, setImageDisplay] = useState<ImageDisplay>({
+    fit: event?.heroImageFit ?? "cover",
+    bg: event?.heroImageBg,
+  })
   const [loading, setLoading] = useState(false)
   const genreInputRef = useRef<HTMLInputElement>(null)
 
@@ -183,6 +188,8 @@ export function EventForm({ event }: Props) {
         status: values.status,
         heroImage,
         imageMeta: values.imageMeta,
+        heroImageFit: imageDisplay.fit,
+        heroImageBg: imageDisplay.bg,
         duration: values.duration,
         genres: values.genres,
         ticketsFrom: values.ticketsFrom,
@@ -393,9 +400,11 @@ export function EventForm({ event }: Props) {
           <SectionHeader title="Hero Image" hasError={sectionHasError("heroImage")} />
           <ImageUpload
             value={event?.heroImage}
-            onChange={(url, meta) => {
+            initialDisplay={imageDisplay}
+            onChange={(url, meta, display) => {
               setValue("heroImage", url, { shouldValidate: true })
               setValue("imageMeta", meta, { shouldValidate: true })
+              setImageDisplay(display)
             }}
             onFileReady={(blob) => setImageBlob(blob.size > 0 ? blob : null)}
             eventName={watch("name")}

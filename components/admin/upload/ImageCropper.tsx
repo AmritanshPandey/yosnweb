@@ -5,10 +5,12 @@ import Cropper from "react-easy-crop"
 import type { Point, Area } from "react-easy-crop"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { cropImageToBlob, fitImageWithBackground, type CropArea, type BgStyle } from "@/lib/utils/image"
+import { cropImageToBlob, getImageDimensions, type CropArea, type BgStyle } from "@/lib/utils/image"
 import type { AllowedRatio } from "@/lib/utils/image"
 
 type Mode = "crop" | "fit"
+
+export type ImageDisplay = { fit: "cover" | "contain"; bg?: BgStyle }
 
 type Props = {
   imageUrl: string
@@ -16,7 +18,8 @@ type Props = {
   allowRatioToggle?: boolean
   selectedRatio?: AllowedRatio
   onRatioChange?: (ratio: AllowedRatio) => void
-  onCropComplete: (blob: Blob, area: CropArea) => void
+  initialDisplay?: ImageDisplay
+  onCropComplete: (blob: Blob, area: CropArea, display: ImageDisplay) => void
   onCancel: () => void
 }
 
@@ -26,22 +29,18 @@ const BG_OPTIONS: { value: BgStyle; label: string; preview: string }[] = [
   { value: "black", label: "Black",     preview: "bg-black" },
 ]
 
-const FIT_OUTPUT: Record<AllowedRatio, { w: number; h: number }> = {
-  "16:9": { w: 1600, h: 900 },
-  "4:5":  { w: 800,  h: 1000 },
-}
-
 export function ImageCropper({
   imageUrl,
   aspect,
   allowRatioToggle,
   selectedRatio = "16:9",
   onRatioChange,
+  initialDisplay,
   onCropComplete,
   onCancel,
 }: Props) {
-  const [mode, setMode] = useState<Mode>("crop")
-  const [bgStyle, setBgStyle] = useState<BgStyle>("blur")
+  const [mode, setMode] = useState<Mode>(initialDisplay?.fit === "contain" ? "fit" : "crop")
+  const [bgStyle, setBgStyle] = useState<BgStyle>(initialDisplay?.bg ?? "blur")
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [croppedPixels, setCroppedPixels] = useState<Area | null>(null)
@@ -67,9 +66,13 @@ export function ImageCropper({
     setProcessing(true)
     try {
       if (mode === "fit") {
-        const blob = await fitImageWithBackground(imageUrl, selectedRatio, bgStyle)
-        const { w, h } = FIT_OUTPUT[selectedRatio]
-        onCropComplete(blob, { x: 0, y: 0, width: w, height: h })
+        // Keep the original image untouched — the letterboxed/blurred-backdrop
+        // look is rendered live with CSS wherever this image is displayed,
+        // instead of being baked into a static file here. Report its real
+        // dimensions rather than a hardcoded target size.
+        const blob = await fetch(imageUrl).then((res) => res.blob())
+        const { width, height } = await getImageDimensions(blob)
+        onCropComplete(blob, { x: 0, y: 0, width, height }, { fit: "contain", bg: bgStyle })
       } else {
         if (!croppedPixels) return
         const cropArea: CropArea = {
@@ -79,7 +82,7 @@ export function ImageCropper({
           height: croppedPixels.height,
         }
         const blob = await cropImageToBlob(imageUrl, cropArea)
-        onCropComplete(blob, cropArea)
+        onCropComplete(blob, cropArea, { fit: "cover" })
       }
     } catch {
       toast.error("Failed to process image. Please try again.")
@@ -160,7 +163,7 @@ export function ImageCropper({
             </div>
           </div>
 
-          {/* Live CSS preview — matches canvas output */}
+          {/* Live CSS preview — this is exactly what gets rendered on the site */}
           <div
             className="relative h-80 overflow-hidden rounded-xl"
             style={{ aspectRatio: selectedRatio === "16:9" ? "16/9" : "4/5" }}

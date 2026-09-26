@@ -29,6 +29,8 @@ function fromDoc(snap: QueryDocumentSnapshot<DocumentData>): Event {
     status: data.status ?? "coming-soon",
     heroImage: data.heroImage ?? "",
     imageMeta: data.imageMeta ?? { width: 0, height: 0 },
+    heroImageFit: data.heroImageFit ?? "cover",
+    heroImageBg: data.heroImageBg,
     duration: data.duration ?? "",
     genres: data.genres ?? [],
     ticketsFrom: data.ticketsFrom ?? "",

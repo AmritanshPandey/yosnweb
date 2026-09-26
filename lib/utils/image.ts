@@ -97,89 +97,14 @@ export async function cropImageToBlob(
   })
 }
 
+// The "fit" display mode (letterboxed image over a blurred/dark/black backdrop)
+// used to be baked into a static image via canvas here. That manual blur
+// simulation never fully hid the backdrop, leaving a visible "ghost" of the
+// photo behind the foreground. It's simpler and more reliable to keep the
+// original image untouched and render the backdrop live with CSS wherever
+// it's displayed — see EventHeroImage in components/home/PastEvents.tsx and
+// the live preview in ImageCropper.tsx, which now share the same technique.
 export type BgStyle = "blur" | "dark" | "black"
-
-const FIT_DIMENSIONS: Record<AllowedRatio, { w: number; h: number }> = {
-  "16:9": { w: 1600, h: 900 },
-  "4:5":  { w: 800,  h: 1000 },
-}
-
-export async function fitImageWithBackground(
-  imageUrl: string,
-  targetRatio: AllowedRatio,
-  bgStyle: BgStyle,
-): Promise<Blob> {
-  const { w: targetW, h: targetH } = FIT_DIMENSIONS[targetRatio]
-
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.crossOrigin = "anonymous"
-    img.onload = () => {
-      const canvas = document.createElement("canvas")
-      canvas.width = targetW
-      canvas.height = targetH
-      const ctx = canvas.getContext("2d")
-      if (!ctx) { reject(new Error("Canvas context unavailable")); return }
-
-      if (bgStyle === "blur") {
-        // Scale image to cover the canvas, then blur + darken it as background.
-        // Note: ctx.filter (blur/brightness) isn't reliably supported in all
-        // browsers (notably older Safari), where it silently no-ops and leaves
-        // a sharp, unblurred image behind the foreground. Instead, blur is
-        // simulated by downscaling then upscaling through a small offscreen
-        // canvas, which works everywhere.
-        const coverScale = Math.max(targetW / img.naturalWidth, targetH / img.naturalHeight)
-        const bgW = img.naturalWidth * coverScale
-        const bgH = img.naturalHeight * coverScale
-        const bgX = (targetW - bgW) / 2
-        const bgY = (targetH - bgH) / 2
-
-        const smallScale = 1 / 20
-        const smallCanvas = document.createElement("canvas")
-        smallCanvas.width = Math.max(1, Math.round(targetW * smallScale))
-        smallCanvas.height = Math.max(1, Math.round(targetH * smallScale))
-        const smallCtx = smallCanvas.getContext("2d")
-        if (!smallCtx) { reject(new Error("Canvas context unavailable")); return }
-        smallCtx.drawImage(
-          img,
-          (bgX - 30) * smallScale,
-          (bgY - 30) * smallScale,
-          (bgW + 60) * smallScale,
-          (bgH + 60) * smallScale,
-        )
-
-        ctx.imageSmoothingEnabled = true
-        ctx.drawImage(smallCanvas, 0, 0, targetW, targetH)
-
-        // Darken the blurred background
-        ctx.fillStyle = "rgba(0, 0, 0, 0.65)"
-        ctx.fillRect(0, 0, targetW, targetH)
-      } else {
-        ctx.fillStyle = bgStyle === "dark" ? "#111111" : "#000000"
-        ctx.fillRect(0, 0, targetW, targetH)
-      }
-
-      // Scale image to contain (fit fully inside canvas), centered
-      const containScale = Math.min(targetW / img.naturalWidth, targetH / img.naturalHeight)
-      const fgW = img.naturalWidth * containScale
-      const fgH = img.naturalHeight * containScale
-      const fgX = (targetW - fgW) / 2
-      const fgY = (targetH - fgH) / 2
-      ctx.drawImage(img, fgX, fgY, fgW, fgH)
-
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) { reject(new Error("Canvas toBlob failed")); return }
-          resolve(blob)
-        },
-        "image/webp",
-        0.9,
-      )
-    }
-    img.onerror = () => reject(new Error("Image load failed"))
-    img.src = imageUrl
-  })
-}
 
 export function generateSlug(name: string): string {
   return name

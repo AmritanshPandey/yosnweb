@@ -68,23 +68,50 @@ function getTicketLink(event: Event) {
   )
 }
 
+// Renders an event's hero image either filling the frame ("cover", the
+// default — crops as needed) or letterboxed over a live blurred/dark/black
+// backdrop ("contain"), matching exactly what the admin upload preview shows.
+function EventHeroImage({ event, sizes }: { event: Event; sizes: string }) {
+  if (!event.heroImage) return <div className="h-full bg-white/5" />
+
+  if (event.heroImageFit === "contain") {
+    return (
+      <>
+        {event.heroImageBg === "dark" || event.heroImageBg === "black" ? (
+          <div className={`absolute inset-0 ${event.heroImageBg === "dark" ? "bg-[#111]" : "bg-black"}`} />
+        ) : (
+          <Image
+            src={event.heroImage}
+            alt=""
+            fill
+            aria-hidden
+            className="object-cover scale-110 blur-2xl brightness-[0.35]"
+            sizes={sizes}
+          />
+        )}
+        <Image src={event.heroImage} alt={event.name} fill className="object-contain" sizes={sizes} />
+      </>
+    )
+  }
+
+  return (
+    <Image
+      src={event.heroImage}
+      alt={event.name}
+      fill
+      className="object-cover transition-transform duration-700 group-hover:scale-105"
+      sizes={sizes}
+    />
+  )
+}
+
 function FeaturedCard({ event }: { event: Event }) {
   const ticketLink = getTicketLink(event)
 
   return (
     <div className="fun-card group relative overflow-hidden rounded-2xl border border-white/10">
       <div className="relative aspect-video w-full overflow-hidden">
-        {event.heroImage ? (
-          <Image
-            src={event.heroImage}
-            alt={event.name}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, 80vw"
-          />
-        ) : (
-          <div className="h-full bg-white/5" />
-        )}
+        <EventHeroImage event={event} sizes="(max-width: 768px) 100vw, 80vw" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
         <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
@@ -140,17 +167,10 @@ function RegularCard({ event }: { event: Event }) {
   return (
     <div className="fun-card group relative overflow-hidden rounded-xl border border-white/10">
       <div className="relative aspect-[4/3] w-full overflow-hidden">
-        {event.heroImage ? (
-          <Image
-            src={event.heroImage}
-            alt={event.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="h-full bg-white/5" />
-        )}
+        <EventHeroImage
+          event={event}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         <div className="absolute left-3 top-3">
           <span className={`rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] ${STATUS_COLORS[event.status]}`}>

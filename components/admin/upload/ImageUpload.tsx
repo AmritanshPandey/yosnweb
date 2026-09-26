@@ -6,18 +6,19 @@ import { toast } from "sonner"
 import { IconUpload, IconX, IconCrop, IconPhoto } from "@tabler/icons-react"
 import { validateImage, compressImage } from "@/lib/utils/image"
 import type { AllowedRatio } from "@/lib/utils/image"
-import { ImageCropper } from "./ImageCropper"
+import { ImageCropper, type ImageDisplay } from "./ImageCropper"
 import { SafeAreaPreview } from "./SafeAreaPreview"
 import { Button } from "@/components/ui/button"
 
 type Props = {
   value?: string
-  onChange: (url: string, meta: { width: number; height: number }) => void
+  onChange: (url: string, meta: { width: number; height: number }, display: ImageDisplay) => void
   onFileReady: (blob: Blob) => void
   label?: string
   eventName?: string
   cities?: string[]
   aspect?: "4:5" | "16:9" | "auto"
+  initialDisplay?: ImageDisplay
 }
 
 const RATIO_VALUES: Record<AllowedRatio, number> = {
@@ -33,12 +34,14 @@ export function ImageUpload({
   eventName,
   cities,
   aspect = "auto",
+  initialDisplay,
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null)
   const [rawUrl, setRawUrl] = useState<string | null>(null)
   const [cropping, setCropping] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(value ?? null)
   const [meta, setMeta] = useState<{ width: number; height: number } | null>(null)
+  const [display, setDisplay] = useState<ImageDisplay>(initialDisplay ?? { fit: "cover" })
   const [dragOver, setDragOver] = useState(false)
   const [compressing, setCompressing] = useState(false)
   // For "auto" aspect (events), default to 16:9 landscape to match the event page layout
@@ -81,7 +84,11 @@ export function ImageUpload({
     if (file) processFile(file)
   }
 
-  function handleCropComplete(blob: Blob, area: { x: number; y: number; width: number; height: number }) {
+  function handleCropComplete(
+    blob: Blob,
+    area: { x: number; y: number; width: number; height: number },
+    nextDisplay: ImageDisplay,
+  ) {
     const url = URL.createObjectURL(blob)
     // Revoke old preview blob URL to avoid memory leak
     if (previewUrl && previewUrl.startsWith("blob:")) URL.revokeObjectURL(previewUrl)
@@ -89,9 +96,10 @@ export function ImageUpload({
     setCropping(false)
     if (rawUrl) URL.revokeObjectURL(rawUrl)
     setRawUrl(null)
+    setDisplay(nextDisplay)
     onFileReady(blob)
     // Use the actual crop output dimensions, not the original image dimensions
-    onChange(url, { width: Math.round(area.width), height: Math.round(area.height) })
+    onChange(url, { width: Math.round(area.width), height: Math.round(area.height) }, nextDisplay)
     toast.success("Image ready.")
   }
 
@@ -113,7 +121,8 @@ export function ImageUpload({
     if (previewUrl) URL.revokeObjectURL(previewUrl)
     setPreviewUrl(null)
     setMeta(null)
-    onChange("", { width: 0, height: 0 })
+    setDisplay({ fit: "cover" })
+    onChange("", { width: 0, height: 0 }, { fit: "cover" })
     onFileReady(new Blob())
   }
 
@@ -142,6 +151,7 @@ export function ImageUpload({
             allowRatioToggle={allowRatioToggle}
             selectedRatio={selectedRatio}
             onRatioChange={setSelectedRatio}
+            initialDisplay={display}
             onCropComplete={handleCropComplete}
             onCancel={handleCropCancel}
           />
@@ -191,7 +201,7 @@ export function ImageUpload({
             </div>
 
             {previewUrl && eventName !== undefined && (
-              <SafeAreaPreview imageUrl={previewUrl} eventName={eventName} cities={cities} />
+              <SafeAreaPreview imageUrl={previewUrl} eventName={eventName} cities={cities} display={display} />
             )}
           </div>
         </div>

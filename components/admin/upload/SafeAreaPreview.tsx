@@ -2,12 +2,14 @@
 
 import Image from "next/image"
 import { IconMapPin } from "@tabler/icons-react"
+import type { ImageDisplay } from "./ImageCropper"
 
 type Props = {
   imageUrl: string
   eventName?: string
   cities?: string[]
   status?: string
+  display?: ImageDisplay
 }
 
 export function SafeAreaPreview({
@@ -15,6 +17,7 @@ export function SafeAreaPreview({
   eventName = "Event Title Preview",
   cities = ["Delhi", "Mumbai"],
   status = "On Sale",
+  display = { fit: "cover" },
 }: Props) {
   return (
     <div className="space-y-3">
@@ -25,13 +28,31 @@ export function SafeAreaPreview({
       {/* 16:9 hero card preview — matches the event page hero container */}
       <div className="relative w-full max-w-sm overflow-hidden rounded-xl border border-white/15 shadow-lg">
         <div className="relative aspect-video w-full">
-          <Image
-            src={imageUrl}
-            alt="Preview"
-            fill
-            className="object-cover"
-            unoptimized
-          />
+          {display.fit === "contain" ? (
+            <>
+              {display.bg === "blur" ? (
+                <Image
+                  src={imageUrl}
+                  alt=""
+                  fill
+                  aria-hidden
+                  unoptimized
+                  className="object-cover scale-110 blur-2xl brightness-[0.35]"
+                />
+              ) : (
+                <div className={`absolute inset-0 ${display.bg === "dark" ? "bg-[#111]" : "bg-black"}`} />
+              )}
+              <Image src={imageUrl} alt="Preview" fill unoptimized className="object-contain" />
+            </>
+          ) : (
+            <Image
+              src={imageUrl}
+              alt="Preview"
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
           {/* Status badge */}
