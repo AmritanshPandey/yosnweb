@@ -2,10 +2,8 @@ import type { Metadata } from "next"
 import { Bebas_Neue, Geist, Geist_Mono } from "next/font/google"
 import { Navbar } from "@/components/shared/Navbar"
 import { ScrollToTop } from "@/components/shared/ScrollToTop"
-import { GrainOverlay } from "@/components/shared/GrainOverlay"
-import { CustomCursor } from "@/components/shared/CustomCursor"
 import { ScrollProgress } from "@/components/shared/ScrollProgress"
-import { SmoothScroll } from "@/components/shared/SmoothScroll"
+import { SiteEffects } from "@/components/shared/SiteEffects"
 import { Toaster } from "sonner"
 import "./globals.css"
 
@@ -87,9 +85,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable}`}
     >
       <body className="bg-black text-white antialiased">
-        <SmoothScroll />
-        <GrainOverlay />
-        <CustomCursor />
+        <SiteEffects />
         <ScrollProgress />
         <Navbar />
         <ScrollToTop />

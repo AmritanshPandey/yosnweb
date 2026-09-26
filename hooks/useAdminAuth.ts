@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { onAuthStateChanged, type User } from "firebase/auth"
 import { useRouter } from "next/navigation"
-import { getClientAuth } from "@/lib/firebase/client"
+import { getClientAuth } from "@/lib/firebase/auth"
 
 type AuthState =
   | { status: "loading" }

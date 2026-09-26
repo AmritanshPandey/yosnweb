@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { motion } from "framer-motion"
+import { useState, useMemo, useRef } from "react"
+import { motion, useInView } from "framer-motion"
 import { IconMapPin } from "@tabler/icons-react"
 
 import { Reveal } from "@/components/shared/Reveal"
@@ -110,6 +110,13 @@ const managedLocations = [
 
 export function ManagedLocations() {
   const [activeCity, setActiveCity] = useState(managedLocations[0].city);
+  // The globe pulls in Three.js + three-globe (~10 chunks) via a dynamic
+  // import. Rendering it eagerly fetches all of that the moment the page
+  // loads, even though this section sits several screens down — deferring
+  // it until it's actually about to scroll into view keeps that weight out
+  // of the critical initial load.
+  const globeRef = useRef<HTMLDivElement>(null);
+  const globeInView = useInView(globeRef, { once: true, margin: "200px 0px" });
 
   const activeLocation =
     managedLocations.find((location) => location.city === activeCity) ??
@@ -220,14 +227,20 @@ export function ManagedLocations() {
                   </p>
                 </motion.div>
 
-                <div className="bg-background relative flex size-full min-h-[320px] items-center justify-center overflow-hidden rounded-xl border border-white/10 px-6 pt-7 pb-24 sm:min-h-[380px] sm:px-10 sm:pt-8 sm:pb-28 md:min-h-[430px] md:pb-32">
-
-                  <GlobeDemo
-                    className="inset-0 z-[1] scale-[1.05]"
-                    cities={globeCities}
-                    initialPosition={{ lat: activeLocation.lat, lng: activeLocation.lng }}
-                    highlightRing={{ lat: activeLocation.lat, lng: activeLocation.lng }}
-                  />
+                <div
+                  ref={globeRef}
+                  className="bg-background relative flex size-full min-h-[320px] items-center justify-center overflow-hidden rounded-xl border border-white/10 px-6 pt-7 pb-24 sm:min-h-[380px] sm:px-10 sm:pt-8 sm:pb-28 md:min-h-[430px] md:pb-32"
+                >
+                  {globeInView ? (
+                    <GlobeDemo
+                      className="inset-0 z-[1] scale-[1.05]"
+                      cities={globeCities}
+                      initialPosition={{ lat: activeLocation.lat, lng: activeLocation.lng }}
+                      highlightRing={{ lat: activeLocation.lat, lng: activeLocation.lng }}
+                    />
+                  ) : (
+                    <div className="absolute inset-6 animate-pulse rounded-full bg-white/5" />
+                  )}
                   <div className="pointer-events-none absolute inset-0 h-full bg-[radial-gradient(circle_at_50%_170%,rgba(49,212,255,0.14),rgba(255,255,255,0))]" />
                 </div>
               </div>

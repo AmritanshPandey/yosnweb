@@ -1,5 +1,4 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app"
-import { getAuth, type Auth } from "firebase/auth"
 import { getFirestore, type Firestore } from "firebase/firestore"
 
 const firebaseConfig = {
@@ -10,18 +9,12 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 }
 
-function getFirebaseApp(): FirebaseApp {
+export function getFirebaseApp(): FirebaseApp {
   if (getApps().length > 0) return getApp()
   return initializeApp(firebaseConfig)
 }
 
-let _auth: Auth | null = null
 let _db: Firestore | null = null
-
-export function getClientAuth(): Auth {
-  if (!_auth) _auth = getAuth(getFirebaseApp())
-  return _auth
-}
 
 export function getClientDb(): Firestore {
   if (!_db) _db = getFirestore(getFirebaseApp())

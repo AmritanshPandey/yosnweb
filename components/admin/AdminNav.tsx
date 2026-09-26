@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { signOut } from "firebase/auth"
-import { getClientAuth } from "@/lib/firebase/client"
+import { getClientAuth } from "@/lib/firebase/auth"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import {
