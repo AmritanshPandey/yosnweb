@@ -164,6 +164,7 @@ export function ImageUpload({
             </div>
             <button
               type="button"
+              aria-label="Remove image"
               onClick={handleRemove}
               className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 shadow-lg transition-all hover:bg-red-400"
             >
@@ -233,7 +234,7 @@ export function ImageUpload({
               {dragOver ? "Drop to upload" : "Click to upload or drag & drop"}
             </p>
             <p className="mt-1 text-xs text-white/30">
-              Any photo from your phone or computer · we'll help you crop it
+              Any photo from your phone or computer · we’ll help you crop it
             </p>
           </div>
         </div>

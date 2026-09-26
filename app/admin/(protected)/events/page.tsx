@@ -4,8 +4,8 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { toast } from "sonner"
-import { IconPlus, IconEdit, IconTrash, IconStar, IconSearch, IconCalendarEvent } from "@tabler/icons-react"
-import { getAllEvents, deleteEvent } from "@/lib/firebase/events"
+import { IconPlus, IconEdit, IconTrash, IconStar, IconStarFilled, IconSearch, IconCalendarEvent } from "@tabler/icons-react"
+import { getAllEvents, deleteEvent, updateEvent } from "@/lib/firebase/events"
 import {
   EVENT_CATEGORIES,
   EVENT_STATUSES,
@@ -48,6 +48,18 @@ export default function AdminEventsPage() {
   useEffect(() => {
     loadEvents()
   }, [])
+
+  // Optimistic quick edits from the list; rolled back if the write fails.
+  async function quickUpdate(event: Event, patch: Partial<Pick<Event, "status" | "featured">>, message: string) {
+    setEvents((prev) => prev.map((e) => (e.id === event.id ? { ...e, ...patch } : e)))
+    try {
+      await updateEvent(event.id, patch)
+      toast.success(message)
+    } catch {
+      setEvents((prev) => prev.map((e) => (e.id === event.id ? event : e)))
+      toast.error("Couldn't save that change. Try again.")
+    }
+  }
 
   async function handleDelete() {
     if (!deleteTarget) return
@@ -161,70 +173,108 @@ export default function AdminEventsPage() {
       {/* Event list */}
       {!loading && filtered.length > 0 && (
         <div className="space-y-3">
-          {filtered.map((event) => (
-            <div
-              key={event.id}
-              className="fun-card flex flex-wrap items-center gap-4 rounded-xl p-4"
-            >
-              {/* Thumbnail */}
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-white/5">
-                {event.heroImage ? (
-                  <Image
-                    src={event.heroImage}
-                    alt={event.name}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <IconCalendarEvent size={20} className="text-white/20" />
-                  </div>
-                )}
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="truncate text-sm font-medium text-white">{event.name}</p>
-                  {event.featured && (
-                    <span className="flex items-center gap-1 rounded-full border border-amber-300/30 bg-amber-300/8 px-2 py-0.5 text-[10px] text-amber-200">
-                      <IconStar size={9} />
-                      Featured
-                    </span>
+          {filtered.map((event) => {
+            const cities = event.cities ?? []
+            const firstCity = cities[0]
+            return (
+              <div
+                key={event.id}
+                className="fun-card flex flex-wrap items-center gap-x-4 gap-y-3 rounded-xl p-4"
+              >
+                {/* Thumbnail */}
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-white/5">
+                  {event.heroImage ? (
+                    <Image src={event.heroImage} alt="" fill className="object-cover" sizes="56px" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
+                      <IconCalendarEvent size={20} className="text-white/20" />
+                    </div>
                   )}
                 </div>
-                <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-white/40">
-                  <span className="capitalize">{CATEGORY_LABELS[event.category]}</span>
-                  <span>·</span>
-                  <span>{event.cities?.length ?? 0} {event.cities?.length === 1 ? "city" : "cities"}</span>
-                  <span>·</span>
-                  <span className="font-mono">{event.slug}</span>
+
+                {/* Info */}
+                <div className="min-w-0 flex-1 basis-48">
+                  <Link
+                    href={`/admin/events/edit?id=${event.id}`}
+                    className="block truncate text-sm font-medium text-white hover:text-cyan-200"
+                  >
+                    {event.name}
+                  </Link>
+                  <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-white/45">
+                    <span>{CATEGORY_LABELS[event.category]}</span>
+                    {firstCity && (
+                      <>
+                        <span aria-hidden>·</span>
+                        <span className="font-mono">
+                          {firstCity.name}
+                          {firstCity.date && ` ${firstCity.date}`}
+                          {cities.length > 1 && ` +${cities.length - 1}`}
+                        </span>
+                      </>
+                    )}
+                    {cities.some((c) => !c.ticketLink) && (
+                      <>
+                        <span aria-hidden>·</span>
+                        <span className="text-amber-300/80">Missing ticket link</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Quick edits + actions */}
+                <div className="flex items-center gap-2">
+                  <label className="sr-only" htmlFor={`status-${event.id}`}>Status for {event.name}</label>
+                  <select
+                    id={`status-${event.id}`}
+                    value={event.status}
+                    onChange={(e) =>
+                      quickUpdate(event, { status: e.target.value as EventStatus }, `Marked “${STATUS_LABELS[e.target.value as EventStatus]}”.`)
+                    }
+                    className={`cursor-pointer appearance-none rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] focus:outline-none ${STATUS_COLORS[event.status]}`}
+                  >
+                    {EVENT_STATUSES.map((s) => (
+                      <option key={s} value={s} className="bg-[#0d0d0d] text-white">
+                        {STATUS_LABELS[s]}
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    type="button"
+                    aria-pressed={event.featured}
+                    aria-label={event.featured ? `Unfeature ${event.name}` : `Feature ${event.name}`}
+                    title={event.featured ? "Featured — click to unfeature" : "Not featured — click to feature"}
+                    onClick={() =>
+                      quickUpdate(event, { featured: !event.featured }, event.featured ? "Removed from featured." : "Featured on the site.")
+                    }
+                    className={`flex h-8 w-8 items-center justify-center rounded-md border transition-colors ${
+                      event.featured
+                        ? "border-amber-300/40 bg-amber-300/10 text-amber-200"
+                        : "border-white/10 text-white/35 hover:border-amber-300/30 hover:text-amber-200"
+                    }`}
+                  >
+                    {event.featured ? <IconStarFilled size={14} /> : <IconStar size={14} />}
+                  </button>
+
+                  <Link
+                    href={`/admin/events/edit?id=${event.id}`}
+                    aria-label={`Edit ${event.name}`}
+                    className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-white/40 transition-colors hover:border-cyan-300/30 hover:bg-cyan-300/8 hover:text-cyan-200"
+                  >
+                    <IconEdit size={15} />
+                  </Link>
+                  <button
+                    type="button"
+                    aria-label={`Delete ${event.name}`}
+                    onClick={() => setDeleteTarget(event)}
+                    className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-white/40 transition-colors hover:border-red-400/30 hover:bg-red-400/8 hover:text-red-300"
+                  >
+                    <IconTrash size={15} />
+                  </button>
                 </div>
               </div>
-
-              {/* Status badge */}
-              <span
-                className={`rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] ${STATUS_COLORS[event.status]}`}
-              >
-                {STATUS_LABELS[event.status]}
-              </span>
-
-              {/* Actions */}
-              <div className="flex items-center gap-2">
-                <Link href={`/admin/events/edit?id=${event.id}`}>
-                  <button className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-white/40 transition-colors hover:border-cyan-300/30 hover:bg-cyan-300/8 hover:text-cyan-200">
-                    <IconEdit size={15} />
-                  </button>
-                </Link>
-                <button
-                  onClick={() => setDeleteTarget(event)}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-white/40 transition-colors hover:border-red-400/30 hover:bg-red-400/8 hover:text-red-300"
-                >
-                  <IconTrash size={15} />
-                </button>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
 

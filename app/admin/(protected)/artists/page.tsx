@@ -6,7 +6,8 @@ import Image from "next/image"
 import { toast } from "sonner"
 import { IconPlus, IconEdit, IconTrash, IconBadge, IconSearch, IconMicrophone2 } from "@tabler/icons-react"
 import { getAllArtists, deleteArtist } from "@/lib/firebase/artists"
-import type { Artist } from "@/types"
+import { getAllEvents } from "@/lib/firebase/events"
+import type { Artist, Event } from "@/types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -20,20 +21,27 @@ import {
 
 export default function AdminArtistsPage() {
   const [artists, setArtists] = useState<Artist[]>([])
+  const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
   const [deleteTarget, setDeleteTarget] = useState<Artist | null>(null)
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    getAllArtists()
-      .then(setArtists)
+    Promise.all([getAllArtists(), getAllEvents()])
+      .then(([a, e]) => {
+        setArtists(a)
+        setEvents(e)
+      })
       .catch(() => toast.error("Failed to load artists."))
       .finally(() => setLoading(false))
   }, [])
 
+  const eventsFor = (artistId: string) => events.filter((e) => e.artistId === artistId)
+  const blockingEvents = deleteTarget ? eventsFor(deleteTarget.id) : []
+
   async function handleDelete() {
-    if (!deleteTarget) return
+    if (!deleteTarget || blockingEvents.length > 0) return
     setDeleting(true)
     try {
       await deleteArtist(deleteTarget.id)
@@ -143,17 +151,29 @@ export default function AdminArtistsPage() {
                     </span>
                   )}
                 </div>
-                <p className="mt-0.5 text-xs text-white/40">{artist.handle}</p>
+                <p className="mt-0.5 text-xs text-white/40">
+                  {artist.handle}
+                  {eventsFor(artist.id).length > 0 && (
+                    <span className="text-white/30">
+                      {" · "}
+                      {eventsFor(artist.id).length} {eventsFor(artist.id).length === 1 ? "event" : "events"}
+                    </span>
+                  )}
+                </p>
               </div>
 
               {/* Actions */}
               <div className="flex items-center gap-2">
-                <Link href={`/admin/artists/edit?id=${artist.id}`}>
-                  <button className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-white/40 transition-colors hover:border-cyan-300/30 hover:bg-cyan-300/8 hover:text-cyan-200">
-                    <IconEdit size={15} />
-                  </button>
+                <Link
+                  href={`/admin/artists/edit?id=${artist.id}`}
+                  aria-label={`Edit ${artist.name}`}
+                  className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-white/40 transition-colors hover:border-cyan-300/30 hover:bg-cyan-300/8 hover:text-cyan-200"
+                >
+                  <IconEdit size={15} />
                 </Link>
                 <button
+                  type="button"
+                  aria-label={`Delete ${artist.name}`}
                   onClick={() => setDeleteTarget(artist)}
                   className="flex h-8 w-8 items-center justify-center rounded-md border border-white/10 text-white/40 transition-colors hover:border-red-400/30 hover:bg-red-400/8 hover:text-red-300"
                 >
@@ -171,8 +191,21 @@ export default function AdminArtistsPage() {
           <DialogHeader>
             <DialogTitle>Delete Artist</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete &quot;{deleteTarget?.name}&quot;? Events linked to this artist will lose their artist reference.
+              {blockingEvents.length > 0
+                ? `“${deleteTarget?.name}” is the artist on ${blockingEvents.length} ${blockingEvents.length === 1 ? "event" : "events"}. Assign those events to another artist first, then delete.`
+                : `Delete “${deleteTarget?.name}”? This can't be undone.`}
             </DialogDescription>
+            {blockingEvents.length > 0 && (
+              <ul className="mt-2 space-y-1 text-sm">
+                {blockingEvents.map((e) => (
+                  <li key={e.id}>
+                    <Link href={`/admin/events/edit?id=${e.id}`} className="text-cyan-200 underline-offset-2 hover:underline">
+                      {e.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </DialogHeader>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setDeleteTarget(null)} disabled={deleting}>
@@ -180,7 +213,7 @@ export default function AdminArtistsPage() {
             </Button>
             <Button
               onClick={handleDelete}
-              disabled={deleting}
+              disabled={deleting || blockingEvents.length > 0}
               className="bg-red-500 text-white hover:bg-red-600 shadow-none"
             >
               {deleting ? "Deleting…" : "Delete"}

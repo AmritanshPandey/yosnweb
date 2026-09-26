@@ -38,7 +38,7 @@ export function CityFieldArray() {
 
       {fields.length === 0 && (
         <p className="rounded-lg border border-dashed border-white/15 py-6 text-center text-xs text-white/35">
-          No cities added yet. Click "Add City" to start.
+          No cities added yet. Click “Add City” to start.
         </p>
       )}
 

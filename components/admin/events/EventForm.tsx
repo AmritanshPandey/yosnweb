@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ImageUpload } from "@/components/admin/upload/ImageUpload"
+import { useUnsavedChangesGuard, UNSAVED_CHANGES_MESSAGE } from "@/hooks/useUnsavedChangesGuard"
 import type { ImageDisplay } from "@/components/admin/upload/ImageCropper"
 import { CityFieldArray } from "./CityFieldArray"
 
@@ -88,11 +89,14 @@ export function EventForm({ event }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitted },
+    formState: { errors, isSubmitted, isDirty },
     watch,
     setValue,
     control,
   } = methods
+
+  const hasUnsavedChanges = (isDirty || imageBlob !== null) && !loading
+  useUnsavedChangesGuard(hasUnsavedChanges)
 
   // Returns true if any of the given fields have an error after a submit attempt
   function sectionHasError(...keys: (keyof EventFormValues)[]) {
@@ -425,7 +429,10 @@ export function EventForm({ event }: Props) {
               type="button"
               variant="ghost"
               size="lg"
-              onClick={() => router.push("/admin/events")}
+              onClick={() => {
+                if (hasUnsavedChanges && !window.confirm(UNSAVED_CHANGES_MESSAGE)) return
+                router.push("/admin/events")
+              }}
               disabled={loading}
             >
               Cancel

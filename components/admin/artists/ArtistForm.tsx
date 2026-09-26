@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { ImageUpload } from "@/components/admin/upload/ImageUpload"
+import { useUnsavedChangesGuard, UNSAVED_CHANGES_MESSAGE } from "@/hooks/useUnsavedChangesGuard"
 
 function SectionHeader({ title, hasError }: { title: string; hasError: boolean }) {
   return (
@@ -46,7 +47,7 @@ export function ArtistForm({ artist }: Props) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitted },
+    formState: { errors, isSubmitted, isDirty },
     watch,
     setValue,
     control,
@@ -81,6 +82,9 @@ export function ArtistForm({ artist }: Props) {
       setValue("slug", generateSlug(watchName), { shouldValidate: false })
     }
   }, [watchName, artist, setValue])
+
+  const hasUnsavedChanges = (isDirty || imageBlob !== null) && !loading
+  useUnsavedChangesGuard(hasUnsavedChanges)
 
   function sectionHasError(...keys: (keyof ArtistFormValues)[]) {
     return isSubmitted && keys.some((k) => k in errors)
@@ -279,7 +283,10 @@ export function ArtistForm({ artist }: Props) {
             type="button"
             variant="ghost"
             size="lg"
-            onClick={() => router.push("/admin/artists")}
+            onClick={() => {
+              if (hasUnsavedChanges && !window.confirm(UNSAVED_CHANGES_MESSAGE)) return
+              router.push("/admin/artists")
+            }}
             disabled={loading}
           >
             Cancel

@@ -24,7 +24,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AdminNav />
-      <main className="min-h-screen bg-black pt-16 sm:pt-20 md:pl-56">
+      <main className="min-h-screen bg-black pb-24 pt-16 sm:pt-20 md:pb-0 md:pl-56">
         <div className="mx-auto max-w-6xl p-5 sm:p-8">
           {children}
         </div>

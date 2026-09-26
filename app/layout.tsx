@@ -96,6 +96,7 @@ export default function RootLayout({
         <Toaster
           position="bottom-right"
           theme="dark"
+          mobileOffset={{ bottom: 84 }}
           toastOptions={{
             style: {
               background: "#0d0d0d",
