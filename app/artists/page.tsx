@@ -53,6 +53,16 @@ const artistData = {
     ],
 }
 
+const ROSTER_TABS = [
+    { value: "musician", label: "Musician" },
+    { value: "comedian", label: "Comedian" },
+    { value: "storyteller", label: "Storyteller" },
+    { value: "dancecrew", label: "Dance Crew" },
+]
+
+const TAB_TRIGGER =
+    "rounded-lg px-3 py-2.5 text-xs font-medium uppercase tracking-[0.14em] text-white/55 transition-all duration-300 hover:bg-white/5 hover:text-cyan-200 data-[state=active]:!text-black data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-300 data-[state=active]:to-fuchsia-300 data-[state=active]:shadow-[0_8px_22px_rgba(49,212,255,0.32)] sm:px-6 sm:text-sm sm:tracking-widest"
+
 export default function Page() {
     return (
         <section className="py-24 bg-black text-white sm:py-32 page-fun">
@@ -79,56 +89,13 @@ export default function Page() {
                 {/* Tabs */}
                 <Tabs defaultValue="musician">
 
-                    <TabsList className="flex justify-center border border-white/10 bg-[#080808] p-1 mb-12 max-w-xl mx-auto sm:mb-16">
-
-                        <TabsTrigger
-                            value="musician"
-                            className="px-4 py-2 text-xs font-medium uppercase tracking-widest
-              text-white/50 hover:text-cyan-200 hover:bg-white/5
-              data-[state=active]:!text-black
-              data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-300 data-[state=active]:to-fuchsia-300
-              data-[state=active]:shadow-[0_8px_22px_rgba(49,212,255,0.32)]
-              transition-all duration-300 sm:px-6 sm:text-sm"
-                        >
-                            Musician
-                        </TabsTrigger>
-
-                        <TabsTrigger
-                            value="comedian"
-                            className="px-4 py-2 text-xs font-medium uppercase tracking-widest
-              text-white/50 hover:text-cyan-200 hover:bg-white/5
-              data-[state=active]:!text-black
-              data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-300 data-[state=active]:to-fuchsia-300
-              data-[state=active]:shadow-[0_8px_22px_rgba(49,212,255,0.32)]
-              transition-all duration-300 sm:px-6 sm:text-sm"
-                        >
-                            Comedian
-                        </TabsTrigger>
-
-                        <TabsTrigger
-                            value="storyteller"
-                            className="px-4 py-2 text-xs font-medium uppercase tracking-widest
-              text-white/50 hover:text-cyan-200 hover:bg-white/5
-              data-[state=active]:!text-black
-              data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-300 data-[state=active]:to-fuchsia-300
-              data-[state=active]:shadow-[0_8px_22px_rgba(49,212,255,0.32)]
-              transition-all duration-300 sm:px-6 sm:text-sm"
-                        >
-                            Storyteller
-                        </TabsTrigger>
-
-                        <TabsTrigger
-                            value="dancecrew"
-                            className="px-4 py-2 text-xs font-medium uppercase tracking-widest
-              text-white/50 hover:text-cyan-200 hover:bg-white/5
-              data-[state=active]:!text-black
-              data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-300 data-[state=active]:to-fuchsia-300
-              data-[state=active]:shadow-[0_8px_22px_rgba(49,212,255,0.32)]
-              transition-all duration-300 sm:px-6 sm:text-sm"
-                        >
-                            Dance Crew
-                        </TabsTrigger>
-
+                    {/* 2×2 on phones — four uppercase tabs don't fit one row at 375px */}
+                    <TabsList className="mx-auto mb-12 grid h-auto w-full max-w-xl grid-cols-2 gap-1 rounded-xl border border-white/10 bg-[#080808] p-1 group-data-[orientation=horizontal]/tabs:h-auto sm:mb-16 sm:flex sm:w-fit">
+                        {ROSTER_TABS.map((tab) => (
+                            <TabsTrigger key={tab.value} value={tab.value} className={TAB_TRIGGER}>
+                                {tab.label}
+                            </TabsTrigger>
+                        ))}
                     </TabsList>
 
                     <TabsContent value="musician">

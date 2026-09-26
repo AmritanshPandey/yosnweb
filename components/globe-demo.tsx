@@ -3,8 +3,19 @@ import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 
+// Shown while the Three.js bundle downloads, so the card never sits empty.
+export function GlobePlaceholder() {
+  return (
+    <div
+      aria-hidden
+      className="absolute left-1/2 top-1/2 aspect-square h-[78%] -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full border border-cyan-300/15 bg-[radial-gradient(circle_at_35%_30%,rgba(49,212,255,0.16),rgba(7,24,40,0.55)_55%,rgba(0,0,0,0.9))] shadow-[0_0_60px_rgba(179,240,255,0.12)]"
+    />
+  );
+}
+
 const World = dynamic(() => import("@/components/ui/globe").then((m) => m.World), {
   ssr: false,
+  loading: () => <GlobePlaceholder />,
 });
 
 type GlobeCity = {

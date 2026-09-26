@@ -288,10 +288,17 @@ export function WebGLRendererConfig() {
 
 export function World(props: WorldProps) {
   const { globeConfig } = props;
-  const scene = new Scene();
-  scene.fog = new Fog(0x070b12, 400, 2000);
+  // Created once: handing Canvas a fresh Scene/Camera on every render (e.g.
+  // each time the active city changes) swapped in an empty scene and made
+  // the globe blank out until it re-attached.
+  const [scene] = useState(() => {
+    const s = new Scene();
+    s.fog = new Fog(0x070b12, 400, 2000);
+    return s;
+  });
+  const [camera] = useState(() => new PerspectiveCamera(50, aspect, 180, 1800));
   return (
-    <Canvas scene={scene} camera={new PerspectiveCamera(50, aspect, 180, 1800)}>
+    <Canvas scene={scene} camera={camera}>
       <WebGLRendererConfig />
       <ambientLight color={globeConfig.ambientLight} intensity={0.6} />
       <directionalLight

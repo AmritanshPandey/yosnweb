@@ -4,6 +4,7 @@ import { Navbar } from "@/components/shared/Navbar"
 import { ScrollToTop } from "@/components/shared/ScrollToTop"
 import { ScrollProgress } from "@/components/shared/ScrollProgress"
 import { SiteEffects } from "@/components/shared/SiteEffects"
+import { MotionProvider } from "@/components/shared/MotionProvider"
 import { Toaster } from "sonner"
 import "./globals.css"
 
@@ -85,11 +86,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable}`}
     >
       <body className="bg-black text-white antialiased">
-        <SiteEffects />
-        <ScrollProgress />
-        <Navbar />
-        <ScrollToTop />
-        {children}
+        <MotionProvider>
+          <SiteEffects />
+          <ScrollProgress />
+          <Navbar />
+          <ScrollToTop />
+          {children}
+        </MotionProvider>
         <Toaster
           position="bottom-right"
           theme="dark"

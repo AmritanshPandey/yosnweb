@@ -153,7 +153,7 @@ export function WeAre() {
         <div className="grid items-start gap-8 sm:gap-16 lg:grid-cols-[0.88fr_1.12fr] lg:gap-20">
           <div className="min-w-0 px-4 sm:px-0">
             <Reveal>
-              <p className="text-[10px] tracking-[0.3em] uppercase text-white/45">
+              <p className="eyebrow-fun">
                 YOSN IN NUMBERS
               </p>
             </Reveal>
@@ -166,7 +166,7 @@ export function WeAre() {
                       <Counter value={stat.value} />
                     </h3>
 
-                    <p className="mt-2 text-[9px] sm:text-xs uppercase tracking-widest text-white/50">
+                    <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.18em] text-white/55 sm:text-xs">
                       {stat.label}
                     </p>
                   </div>
@@ -189,14 +189,14 @@ export function WeAre() {
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
-            <div className="absolute inset-0 overflow-hidden rounded-0 sm:rounded-xl md:rounded-lg lg:rounded-2xl border border-white/10 bg-black shadow-2xl">
-              <AnimatePresence mode="wait">
+            <div className="absolute inset-0 overflow-hidden sm:rounded-2xl border border-white/10 bg-black shadow-2xl">
+              <AnimatePresence initial={false}>
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, scale: 1.05 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.8 }}
+                  transition={{ duration: 1.1, ease: "easeInOut" }}
                   className="absolute inset-0"
                 >
                   <Image
@@ -251,9 +251,9 @@ export function WeAre() {
           <div className="relative mt-16 sm:mt-20 overflow-hidden border-t border-white/10 pt-8 sm:pt-12 md:mt-24 md:pt-16">
             <div className="relative flex flex-col gap-4 px-4 sm:gap-6 sm:px-0 lg:flex-row lg:items-center lg:justify-between">
               <div className="max-w-xl">
-                <div className="inline-flex items-center gap-3 border border-cyan-300/30 bg-black px-4 py-2 text-[11px] uppercase tracking-[0.28em] text-cyan-100/70">
+                <div className="inline-flex items-center gap-3 rounded-full border border-cyan-300/30 bg-black px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-cyan-100/70">
                   <motion.span
-                    className="h-2 w-2 bg-cyan-200"
+                    className="h-2 w-2 rounded-full bg-cyan-200"
                     animate={{ scale: [0.95, 1.08, 0.95], opacity: [0.55, 0.85, 0.55] }}
                     transition={{ duration: 16.2, repeat: Infinity, ease: "easeInOut" }}
                   />
@@ -270,7 +270,7 @@ export function WeAre() {
               </div>
 
               <div className="relative">
-                <div className="relative overflow-hidden rounded-xl border border-white/10 bg-black px-5 py-5 md:px-7">
+                <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-black px-5 py-5 md:px-7">
                   <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,79,216,0.14),_transparent_40%)]" />
                   <TicketCounter value={liveTicketCount} />
 

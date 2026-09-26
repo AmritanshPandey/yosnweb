@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { IconMapPin, IconStar } from "@tabler/icons-react"
+import { IconArrowUpRight, IconStar } from "@tabler/icons-react"
 import { getAllEvents } from "@/lib/firebase/events"
 import type { Event } from "@/types"
 import { STATUS_LABELS, STATUS_COLORS, CATEGORY_LABELS } from "@/types"
@@ -60,6 +60,8 @@ const GALLERY: { src: string; highlight?: true }[] = [
 
 // ────────────────────────────────────────────────────────────────────────────
 
+const MOBILE_GALLERY_LIMIT = 8
+
 function getTicketLink(event: Event) {
   return (
     event.cities?.find((c) => !c.soldOut)?.ticketLink ??
@@ -105,106 +107,147 @@ function EventHeroImage({ event, sizes }: { event: Event; sizes: string }) {
   )
 }
 
-function FeaturedCard({ event }: { event: Event }) {
-  const ticketLink = getTicketLink(event)
+// Event cards are ticket stubs: the flyer/photo sits untouched on top (flyers
+// already carry their own artwork and text, so nothing is laid over them),
+// then a perforated tear line, then the stub with the details.
+const TICKET_SHELL =
+  "group relative rounded-2xl transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_22px_48px_-18px_rgba(49,212,255,0.45),0_14px_36px_-22px_rgba(255,79,216,0.5)]"
+const TICKET_EDGE =
+  "border-white/10 bg-[#0a0a0d] transition-colors duration-300 group-hover:border-cyan-300/45"
 
+function StatusBadge({ event }: { event: Event }) {
   return (
-    <div className="fun-card group relative overflow-hidden rounded-2xl border border-white/10">
-      <div className="relative aspect-video w-full overflow-hidden">
-        <EventHeroImage event={event} sizes="(max-width: 768px) 100vw, 80vw" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
-
-        <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
-          <span className={`rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.2em] ${STATUS_COLORS[event.status]}`}>
-            {STATUS_LABELS[event.status]}
-          </span>
-          <span className="flex items-center gap-1 rounded-full border border-amber-300/40 bg-amber-300/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-amber-200">
-            <IconStar size={9} />
-            Featured
-          </span>
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-white/50">{CATEGORY_LABELS[event.category]}</p>
-          <h3 className="font-display mt-1 text-3xl uppercase tracking-tight text-white sm:text-4xl md:text-5xl">
-            {event.name}
-          </h3>
-          <div className="mt-3 flex flex-wrap gap-3">
-            {event.cities?.slice(0, 3).map((city) => (
-              <span key={city.name} className="flex items-center gap-1 text-xs text-white/60">
-                <IconMapPin size={11} className="text-cyan-300" />
-                {city.name}
-              </span>
-            ))}
-            {event.cities?.length > 3 && (
-              <span className="text-xs text-white/40">+{event.cities.length - 3} more cities</span>
-            )}
-          </div>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            {ticketLink && (
-              <Link
-                href={ticketLink}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-lg border border-cyan-300/40 bg-cyan-300/10 px-5 py-2 text-xs uppercase tracking-[0.2em] text-cyan-100 transition-all hover:bg-cyan-300/20"
-              >
-                Book Tickets
-              </Link>
-            )}
-            {event.ticketsFrom && (
-              <span className="text-sm text-white/45">from {event.ticketsFrom}</span>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    <span
+      className={`rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] backdrop-blur-sm ${STATUS_COLORS[event.status]}`}
+    >
+      {STATUS_LABELS[event.status]}
+    </span>
   )
 }
 
-function RegularCard({ event }: { event: Event }) {
+function TearLine() {
+  return <div aria-hidden className="absolute inset-x-5 top-0 border-t border-dashed border-white/20" />
+}
+
+function FeaturedCard({ event }: { event: Event }) {
   const ticketLink = getTicketLink(event)
+  const cities = event.cities ?? []
 
   return (
-    <div className="fun-card group relative overflow-hidden rounded-xl border border-white/10">
-      <div className="relative aspect-[4/3] w-full overflow-hidden">
-        <EventHeroImage
-          event={event}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        <div className="absolute left-3 top-3">
-          <span className={`rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] ${STATUS_COLORS[event.status]}`}>
-            {STATUS_LABELS[event.status]}
+    <article className={TICKET_SHELL}>
+      <div className={`ticket-notch-bottom relative aspect-video overflow-hidden rounded-t-2xl border-x border-t ${TICKET_EDGE}`}>
+        <EventHeroImage event={event} sizes="(max-width: 768px) 100vw, 80vw" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/60 to-transparent" />
+        <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
+          <StatusBadge event={event} />
+          <span className="flex items-center gap-1.5 rounded-full border border-amber-300/45 bg-black/40 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-amber-200 backdrop-blur-sm">
+            <IconStar size={10} />
+            Featured
           </span>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 className="font-display text-xl uppercase tracking-tight text-white line-clamp-2">
+      </div>
+
+      <div className={`ticket-notch-top relative grid gap-6 rounded-b-2xl border-x border-b px-5 py-6 sm:px-8 sm:py-7 md:grid-cols-[1fr_auto] md:items-end ${TICKET_EDGE}`}>
+        <TearLine />
+        <div className="min-w-0">
+          <p className="eyebrow-fun">
+            {CATEGORY_LABELS[event.category]}
+            {event.duration && <span className="text-white/35"> · {event.duration}</span>}
+          </p>
+          <h3 className="mt-2 font-display text-4xl uppercase leading-none tracking-tight text-white sm:text-5xl md:text-6xl">
             {event.name}
           </h3>
-          <div className="mt-1.5 flex flex-wrap gap-2">
-            {event.cities?.slice(0, 2).map((city) => (
-              <span key={city.name} className="flex items-center gap-1 text-[10px] text-white/55">
-                <IconMapPin size={9} className="text-cyan-300" />
-                {city.name}
-              </span>
-            ))}
-            {event.cities?.length > 2 && (
-              <span className="text-[10px] text-white/35">+{event.cities.length - 2} more</span>
-            )}
-          </div>
+          {cities.length > 0 && (
+            <ul className="mt-4 flex flex-wrap gap-x-6 gap-y-1.5 font-mono text-xs uppercase tracking-[0.12em]">
+              {cities.slice(0, 4).map((city) => (
+                <li key={city.name} className={city.soldOut ? "text-white/35 line-through" : "text-white/75"}>
+                  {city.name}
+                  {city.date && <span className="ml-2 text-white/40">{city.date}</span>}
+                </li>
+              ))}
+              {cities.length > 4 && <li className="text-white/40">+{cities.length - 4} more</li>}
+            </ul>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between gap-4 md:flex-col md:items-end">
+          {event.ticketsFrom && (
+            <p className="whitespace-nowrap font-mono md:text-right">
+              <span className="block text-[10px] uppercase tracking-[0.22em] text-white/40">From</span>
+              <span className="text-lg text-white">{event.ticketsFrom}</span>
+            </p>
+          )}
           {ticketLink && (
             <Link
               href={ticketLink}
               target="_blank"
               rel="noreferrer"
-              className="mt-3 inline-block rounded-md border border-cyan-300/30 bg-cyan-300/8 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-cyan-100 transition-all hover:bg-cyan-300/15"
+              className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-cyan-300 px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-black sm:px-6 sm:py-3 sm:text-xs sm:tracking-[0.18em] transition-[background-color,box-shadow] duration-300 hover:bg-white hover:shadow-[0_0_28px_rgba(49,212,255,0.6)]"
             >
-              Book Tickets
+              Book tickets
+              <IconArrowUpRight size={15} stroke={2.2} />
             </Link>
           )}
         </div>
       </div>
-    </div>
+    </article>
+  )
+}
+
+function RegularCard({ event }: { event: Event }) {
+  const ticketLink = getTicketLink(event)
+  const firstCity = event.cities?.[0]
+  const moreCities = (event.cities?.length ?? 0) - 1
+
+  return (
+    <article className={`${TICKET_SHELL} flex h-full flex-col`}>
+      <div className={`ticket-notch-bottom relative aspect-[4/3] overflow-hidden rounded-t-2xl border-x border-t ${TICKET_EDGE}`}>
+        <EventHeroImage
+          event={event}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-black/60 to-transparent" />
+        <div className="absolute left-3 top-3">
+          <StatusBadge event={event} />
+        </div>
+      </div>
+
+      <div className={`ticket-notch-top relative flex flex-1 flex-col rounded-b-2xl border-x border-b px-5 pb-5 pt-5 ${TICKET_EDGE}`}>
+        <TearLine />
+        {firstCity && (
+          <p className="eyebrow-fun">
+            {firstCity.name}
+            {firstCity.date && <span className="text-white/35"> · {firstCity.date}</span>}
+            {moreCities > 0 && <span className="text-white/35"> · +{moreCities}</span>}
+          </p>
+        )}
+        <h3 className="mt-2 line-clamp-2 font-display text-2xl uppercase leading-none tracking-tight text-white sm:text-3xl">
+          {event.name}
+        </h3>
+
+        <div className="mt-auto flex items-end justify-between gap-3 pt-5">
+          {event.ticketsFrom ? (
+            <p className="whitespace-nowrap font-mono">
+              <span className="block text-[10px] uppercase tracking-[0.22em] text-white/40">From</span>
+              <span className="text-sm text-white">{event.ticketsFrom}</span>
+            </p>
+          ) : (
+            <span />
+          )}
+          {ticketLink && (
+            <Link
+              href={ticketLink}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-cyan-300/50 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-cyan-100 transition-[background-color,color,box-shadow] duration-300 hover:bg-cyan-300 hover:text-black hover:shadow-[0_0_22px_rgba(49,212,255,0.5)]"
+            >
+              Book tickets
+              <IconArrowUpRight size={13} stroke={2.2} />
+            </Link>
+          )}
+        </div>
+      </div>
+    </article>
   )
 }
 
@@ -224,6 +267,7 @@ function EventSkeletons() {
 export function PastEvents() {
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
+  const [showAllPhotos, setShowAllPhotos] = useState(false)
 
 
   useEffect(() => {
@@ -300,40 +344,55 @@ export function PastEvents() {
           </Reveal>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 items-start [grid-auto-flow:dense]">
-            {GALLERY.map((photo, i) => (
-              <Reveal
-                key={i}
-                delay={Math.min(i * 0.02, 0.12)}
-                className={photo.highlight ? "col-span-2" : "col-span-1"}
-              >
-                <div
-                  className={`group relative overflow-hidden rounded-xl ${photo.highlight
-                    ? "ring-1 ring-cyan-300/30 shadow-[0_0_28px_rgba(49,212,255,0.10)]"
-                    : ""
-                    }`}
+            {GALLERY.map((photo, i) => {
+              // Phones: plain 2-up squares and only the first few until "Show all";
+              // the 2×2 highlight layout starts at sm.
+              const hiddenOnMobile = !showAllPhotos && i >= MOBILE_GALLERY_LIMIT
+              return (
+                <Reveal
+                  key={i}
+                  delay={Math.min(i * 0.02, 0.12)}
+                  className={`${photo.highlight ? "col-span-1 sm:col-span-2" : "col-span-1"} ${hiddenOnMobile ? "hidden sm:block" : ""}`}
                 >
-                  <div className="relative w-full aspect-square overflow-hidden">
-                    <Image
-                      src={photo.src}
-                      alt={`YOSN event night ${i + 1}`}
-                      fill
-                      className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-                      sizes={photo.highlight ? "(max-width: 640px) 100vw, 50vw" : "(max-width: 640px) 50vw, 25vw"}
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-black/10 transition-all duration-300 group-hover:bg-black/0" />
-                  {photo.highlight && (
-                    <div className="absolute right-3 top-3">
-                      <span className="flex items-center gap-1 rounded-full border border-cyan-300/30 bg-black/55 px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] text-cyan-200 backdrop-blur-sm">
-                        <IconStar size={8} />
-                        Highlight
-                      </span>
+                  <div
+                    className={`group relative overflow-hidden rounded-xl ${photo.highlight
+                      ? "sm:ring-1 sm:ring-cyan-300/30 sm:shadow-[0_0_28px_rgba(49,212,255,0.10)]"
+                      : ""
+                      }`}
+                  >
+                    <div className="relative w-full aspect-square overflow-hidden">
+                      <Image
+                        src={photo.src}
+                        alt={`YOSN event night ${i + 1}`}
+                        fill
+                        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+                        sizes={photo.highlight ? "(max-width: 640px) 50vw, 50vw" : "(max-width: 640px) 50vw, 25vw"}
+                      />
                     </div>
-                  )}
-                </div>
-              </Reveal>
-            ))}
+                    <div className="absolute inset-0 bg-black/10 transition-all duration-300 group-hover:bg-black/0" />
+                    {photo.highlight && (
+                      <div className="absolute right-3 top-3 hidden sm:block">
+                        <span className="flex items-center gap-1 rounded-full border border-cyan-300/30 bg-black/55 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.15em] text-cyan-200 backdrop-blur-sm">
+                          <IconStar size={8} />
+                          Highlight
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </Reveal>
+              )
+            })}
           </div>
+
+          {!showAllPhotos && GALLERY.length > MOBILE_GALLERY_LIMIT && (
+            <button
+              type="button"
+              onClick={() => setShowAllPhotos(true)}
+              className="mt-6 w-full rounded-full border border-cyan-300/40 py-3 font-mono text-xs uppercase tracking-[0.18em] text-cyan-100 transition-colors hover:bg-cyan-300/10 sm:hidden"
+            >
+              Show all {GALLERY.length} photos
+            </button>
+          )}
         </div>
 
       </div>

@@ -29,16 +29,16 @@ export function Clients() {
           </p>
         </Reveal>
 
-        <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-12 md:grid-cols-3">
+        <div className="grid w-full grid-cols-2 gap-3 sm:gap-12 md:grid-cols-3">
           {logos.map((logo, i) => (
             <Reveal key={i} delay={i * 0.08}>
-              <div className="flex h-32 items-center justify-center rounded-xl border border-white/20 bg-white p-8 transition-all duration-300 hover:border-cyan-300/40 hover:shadow-[0_16px_42px_rgba(49,212,255,0.18),0_8px_28px_rgba(255,79,216,0.12)] sm:h-40 sm:p-10 md:h-44">
+              <div className="flex h-24 items-center justify-center rounded-xl border border-white/20 bg-white p-4 transition-all duration-300 hover:border-cyan-300/40 hover:shadow-[0_16px_42px_rgba(49,212,255,0.18),0_8px_28px_rgba(255,79,216,0.12)] sm:h-40 sm:p-10 md:h-44">
                 <Image
                   src={logo.src}
                   alt={logo.alt}
                   width={200}
                   height={80}
-                  className="max-h-20 w-auto object-contain opacity-100 transition-all duration-300 hover:scale-110"
+                  className="max-h-12 max-w-full w-auto object-contain opacity-100 sm:max-h-20 transition-all duration-300 hover:scale-110"
                 />
               </div>
             </Reveal>

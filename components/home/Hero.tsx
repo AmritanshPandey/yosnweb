@@ -66,44 +66,36 @@ export function Hero() {
 
       <div className="relative z-10 mx-12 flex min-h-screen max-w-7xl items-end justify-center pb-16 pt-20 sm:items-center sm:pb-20 sm:pt-24 md:pt-28">
         <div className="max-w-4xl w-full text-center sm:text-left">
-          <motion.p 
-            className="eyebrow-fun mb-4 text-[11px] sm:mb-4 sm:text-[10px]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+          {/* Entrance runs as CSS (not framer-motion) so the headline animates in
+              on first paint instead of sitting invisible until JS hydrates. */}
+          <p
+            className="hero-rise eyebrow-fun mb-4 text-[11px] sm:mb-4 sm:text-[10px]"
+            style={{ animationDelay: "0.2s" }}
           >
             MUMBAI&apos;S LIVE ENTERTAINMENT STUDIO
-          </motion.p>
+          </p>
 
           <div className="relative">
             <h1 className="font-display text-[34vw] sm:text-[15vw] md:text-[18vw] leading-[0.82] sm:leading-[0.85] uppercase tracking-tight">
               {["Y", "O", "S", "N"].map((letter, i) => (
-                <motion.span
+                <span
                   key={letter}
-                  className="inline-block text-transparent bg-gradient-to-br from-white via-cyan-100 to-fuchsia-200 bg-clip-text"
-                  initial={{ opacity: 0, y: 64, rotateX: 80 }}
-                  animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                  transition={{
-                    duration: 0.75,
-                    delay: 0.35 + i * 0.1,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
+                  className="hero-letter inline-block text-transparent bg-gradient-to-br from-white via-cyan-100 to-fuchsia-200 bg-clip-text"
+                  style={{ animationDelay: `${(0.35 + i * 0.1).toFixed(2)}s` }}
                 >
                   {letter}
-                </motion.span>
+                </span>
               ))}
             </h1>
             <div className="absolute -inset-3 sm:-inset-8 bg-gradient-to-r from-cyan-500/20 via-fuchsia-500/20 to-transparent blur-3xl pointer-events-none opacity-50" />
           </div>
 
-          <motion.p
-            className="body-fun mt-5 sm:mt-3 max-w-xl sm:mx-0 text-xl sm:text-base sm:mt-4 md:text-lg"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
+          <p
+            className="hero-rise body-fun mt-5 sm:mt-3 max-w-xl sm:mx-0 text-xl sm:text-base sm:mt-4 md:text-lg"
+            style={{ animationDelay: "0.8s" }}
           >
             We don&apos;t just host events. We create nights people never forget.
-          </motion.p>
+          </p>
 
           <MagneticButton className="mt-8 inline-block sm:mt-10">
             <Button

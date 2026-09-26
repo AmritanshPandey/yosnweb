@@ -15,7 +15,7 @@ export function ScrollDownIndicator() {
         }
       }}
     >
-      <span className="text-[9px] sm:text-xs text-white/60 tracking-widest mb-1 group-hover:text-cyan-200 transition">Scroll</span>
+      <span className="text-[11px] sm:text-xs text-white/60 tracking-widest mb-1 group-hover:text-cyan-200 transition">Scroll</span>
       <motion.span
         animate={{ y: [0, 12, 0] }}
         transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}

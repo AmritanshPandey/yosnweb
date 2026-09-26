@@ -137,36 +137,62 @@
 }
 
 @layer utilities {
+  /* Most sections carry this, so it's kept faint — stacked at full strength
+     every section wore the same glow and none of them stood out. */
   .page-fun {
     background-image:
-      radial-gradient(circle at 12% 4%, rgba(49, 212, 255, 0.14), transparent 32%),
-      radial-gradient(circle at 88% 12%, rgba(255, 79, 216, 0.1), transparent 30%);
+      radial-gradient(circle at 12% 4%, rgba(49, 212, 255, 0.08), transparent 32%),
+      radial-gradient(circle at 88% 12%, rgba(255, 79, 216, 0.06), transparent 30%);
   }
 
   .heading-fun {
     @apply font-display uppercase tracking-tight text-white;
   }
 
+  /* Small labels, dates and prices use the mono face — ticket-print feel. */
   .eyebrow-fun {
-    @apply text-[10px] uppercase tracking-[0.3em] text-white/45 sm:text-xs;
+    @apply font-mono text-[11px] uppercase tracking-[0.22em] text-white/55 sm:text-xs;
   }
 
   .body-fun {
-    @apply text-sm tracking-wide text-white/65;
+    @apply text-[15px] leading-relaxed text-white/70;
   }
 
   .fun-card {
-    @apply border border-white/10 bg-[#080808]/95 transition-all duration-300;
-    box-shadow: 0 0 0 rgba(49, 212, 255, 0);
+    @apply border border-white/10 bg-[#0a0a0d];
+    transition: border-color 300ms ease-out, box-shadow 300ms ease-out, transform 300ms ease-out;
   }
 
   .fun-card:hover {
-    border-color: rgba(49, 212, 255, 0.5);
+    border-color: rgba(49, 212, 255, 0.45);
     box-shadow:
-      0 0 0 1px rgba(49, 212, 255, 0.12),
-      0 16px 48px rgba(49, 212, 255, 0.18),
-      0 8px 28px rgba(255, 79, 216, 0.12),
-      0 0 100px rgba(49, 212, 255, 0.07);
+      0 0 0 1px rgba(49, 212, 255, 0.14),
+      0 18px 40px -14px rgba(49, 212, 255, 0.35),
+      0 12px 32px -18px rgba(255, 79, 216, 0.4);
+  }
+
+  /* Ticket-stub notches: punch half-circles out of the corners where the
+     image and the stub meet. */
+  .ticket-notch-bottom {
+    -webkit-mask-image:
+      radial-gradient(circle at 0 100%, transparent 11px, #000 11.5px),
+      radial-gradient(circle at 100% 100%, transparent 11px, #000 11.5px);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      radial-gradient(circle at 0 100%, transparent 11px, #000 11.5px),
+      radial-gradient(circle at 100% 100%, transparent 11px, #000 11.5px);
+    mask-composite: intersect;
+  }
+
+  .ticket-notch-top {
+    -webkit-mask-image:
+      radial-gradient(circle at 0 0, transparent 11px, #000 11.5px),
+      radial-gradient(circle at 100% 0, transparent 11px, #000 11.5px);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      radial-gradient(circle at 0 0, transparent 11px, #000 11.5px),
+      radial-gradient(circle at 100% 0, transparent 11px, #000 11.5px);
+    mask-composite: intersect;
   }
 
   .fun-link {
@@ -229,6 +255,38 @@
 
 .animate-pulse-glow {
   animation: pulse-glow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+:where(a, button, [role="button"], input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 3px;
+}
+
+@keyframes hero-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes hero-letter {
+  from { opacity: 0; transform: translateY(64px) rotateX(80deg); }
+  to { opacity: 1; transform: none; }
+}
+
+.hero-rise {
+  animation: hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-letter {
+  animation: hero-letter 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-pulse-glow,
+  .hero-rise,
+  .hero-letter {
+    animation: none;
+  }
 }
 
 /* Custom cursor: hide native cursor on desktop when custom one is active */

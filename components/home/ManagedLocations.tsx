@@ -5,7 +5,7 @@ import { motion, useInView } from "framer-motion"
 import { IconMapPin } from "@tabler/icons-react"
 
 import { Reveal } from "@/components/shared/Reveal"
-import GlobeDemo from "@/components/globe-demo"
+import GlobeDemo, { GlobePlaceholder } from "@/components/globe-demo"
 import { cn } from "@/lib/utils"
 
 const managedLocations = [
@@ -122,6 +122,11 @@ export function ManagedLocations() {
     managedLocations.find((location) => location.city === activeCity) ??
     managedLocations[0];
 
+  const activePosition = useMemo(
+    () => ({ lat: activeLocation.lat, lng: activeLocation.lng }),
+    [activeLocation.lat, activeLocation.lng],
+  );
+
   const globeCities = useMemo(
     () => managedLocations.map(({ city, lat, lng }) => ({ city, lat, lng })),
     [],
@@ -135,7 +140,7 @@ export function ManagedLocations() {
         <div className="relative">
           <div className="max-w-3xl">
             <Reveal>
-              <div className="inline-flex items-center gap-2 border border-fuchsia-300/30 bg-white/[0.03] px-4 py-2 text-[11px] uppercase tracking-[0.28em] text-fuchsia-100/70">
+              <div className="inline-flex items-center gap-2 rounded-full border border-fuchsia-300/30 bg-white/[0.03] px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-fuchsia-100/70">
                 <IconMapPin size={14} className="text-fuchsia-200/90" />
                 On The Road With YOSN
               </div>
@@ -173,7 +178,7 @@ export function ManagedLocations() {
                         onFocus={() => setActiveCity(location.city)}
                         onClick={() => setActiveCity(location.city)}
                         className={cn(
-                          "group border px-3 py-2 text-left transition-all duration-300 sm:px-4 sm:py-2.5",
+                          "group rounded-lg border px-3 py-2 text-left transition-colors duration-300 sm:px-4 sm:py-2.5",
                           isActive
                             ? "border-cyan-200 bg-gradient-to-r from-cyan-300 to-fuchsia-300 text-black"
                             : "border-white/10 bg-white/[0.03] text-white/60 hover:border-cyan-300/40 hover:bg-white/[0.05] hover:text-cyan-100",
@@ -184,10 +189,10 @@ export function ManagedLocations() {
                         </span>
                         <span
                           className={cn(
-                            "ml-1.5 text-[9px] uppercase tracking-[0.2em] sm:ml-2 sm:text-[10px] sm:tracking-[0.22em]",
+                            "ml-1.5 font-mono text-[10px] uppercase tracking-[0.14em] sm:ml-2 sm:text-[11px]",
                             isActive
                               ? "text-black/65"
-                              : "text-white/45 group-hover:text-black/55",
+                              : "text-white/45 group-hover:text-cyan-100/70",
                           )}
                         >
                           {location.country}
@@ -200,13 +205,13 @@ export function ManagedLocations() {
             </div>
 
             <Reveal delay={0.2}>
-              <div className="fun-card relative overflow-hidden p-3 sm:p-4 md:p-5">
+              <div className="fun-card relative overflow-hidden rounded-2xl p-3 sm:p-4 md:p-5">
                 <motion.div
-                  className="absolute left-3 top-3 z-10 border border-white/10 bg-black/70 px-3 py-1.5 backdrop-blur-sm sm:left-5 sm:top-5 sm:px-3.5 sm:py-1.5"
+                  className="absolute left-3 top-3 z-10 rounded-lg border border-white/10 bg-black/70 px-3 py-1.5 backdrop-blur-sm sm:left-5 sm:top-5 sm:px-3.5 sm:py-1.5"
                   animate={{ y: [0, -6, 0] }}
                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <p className="text-[10px] uppercase tracking-[0.24em] text-white/45">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">
                     Now Circling
                   </p>
                   <p className="mt-1 text-sm font-medium text-white/80">
@@ -215,14 +220,14 @@ export function ManagedLocations() {
                 </motion.div>
 
                 <motion.div
-                  className="absolute bottom-4 right-3 z-10 border border-white/10 bg-black/70 px-3 py-2.5 backdrop-blur-sm sm:bottom-6 sm:right-5 sm:px-4 sm:py-3"
+                  className="absolute right-3 top-3 z-10 rounded-lg border border-white/10 bg-black/70 px-3 py-1.5 backdrop-blur-sm sm:bottom-6 sm:right-5 sm:top-auto sm:px-4 sm:py-3"
                   animate={{ y: [0, 8, 0] }}
                   transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <p className="text-[10px] uppercase tracking-[0.24em] text-white/45">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">
                     City Count
                   </p>
-                  <p className="mt-1 font-display text-4xl uppercase tracking-tight text-white">
+                  <p className="mt-1 font-display text-2xl uppercase leading-none tracking-tight text-white sm:text-4xl">
                     {managedLocations.length}
                   </p>
                 </motion.div>
@@ -235,11 +240,11 @@ export function ManagedLocations() {
                     <GlobeDemo
                       className="inset-0 z-[1] scale-[1.05]"
                       cities={globeCities}
-                      initialPosition={{ lat: activeLocation.lat, lng: activeLocation.lng }}
-                      highlightRing={{ lat: activeLocation.lat, lng: activeLocation.lng }}
+                      initialPosition={activePosition}
+                      highlightRing={activePosition}
                     />
                   ) : (
-                    <div className="absolute inset-6 animate-pulse rounded-full bg-white/5" />
+                    <GlobePlaceholder />
                   )}
                   <div className="pointer-events-none absolute inset-0 h-full bg-[radial-gradient(circle_at_50%_170%,rgba(49,212,255,0.14),rgba(255,255,255,0))]" />
                 </div>
