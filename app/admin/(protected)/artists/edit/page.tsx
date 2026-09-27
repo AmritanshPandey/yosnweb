@@ -16,7 +16,7 @@ function EditArtistContent() {
   const [error, setError] = useState(false)
 
   useEffect(() => {
-    if (!id) { setError(true); setLoading(false); return }
+    if (!id) return
     getArtistById(id)
       .then((data) => {
         if (!data) setError(true)
@@ -26,7 +26,7 @@ function EditArtistContent() {
       .finally(() => setLoading(false))
   }, [id])
 
-  if (loading) {
+  if (id && loading) {
     return (
       <div className="space-y-4">
         <div className="h-8 w-48 animate-pulse rounded bg-white/10" />
@@ -35,7 +35,7 @@ function EditArtistContent() {
     )
   }
 
-  if (error || !artist) {
+  if (!id || error || !artist) {
     return (
       <div className="rounded-2xl border border-red-400/20 bg-red-400/5 p-8 text-center">
         <p className="text-sm text-red-300">Artist not found or failed to load.</p>

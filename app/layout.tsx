@@ -25,7 +25,7 @@ const bebasNeue = Bebas_Neue({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://yosninnovations.com"), // update after domain
+  metadataBase: new URL("https://www.yosn.events"),
   title: {
     default: "YOSN Innovations | Live Events & Brand Experiences",
     template: "%s | YOSN Innovations",
@@ -46,32 +46,20 @@ export const metadata: Metadata = {
     title: "YOSN Innovations | Live Events & Brand Experiences",
     description:
       "Creating immersive entertainment experiences that elevate brands and energize audiences.",
-    url: "https://yosninnovations.com",
+    url: "https://www.yosn.events",
     siteName: "YOSN Innovations",
     locale: "en_IN",
     type: "website",
-    images: [
-      {
-        url: "/og-image.jpg", // place inside public/
-        width: 1200,
-        height: 630,
-        alt: "YOSN Innovations",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "YOSN Innovations",
     description:
       "Live events, artist management & experiential marketing.",
-    images: ["/og-image.jpg"],
   },
   robots: {
     index: true,
     follow: true,
-  },
-  icons: {
-    icon: "/favicon.png",
   },
 }
 

@@ -2,7 +2,7 @@ import { z } from "zod"
 
 const citySchema = z.object({
   name: z.string().min(1, "City name is required"),
-  date: z.string().min(1, "Date is required (e.g. Sat, 24 Oct 2026)"),
+  date: z.string().min(1, "Pick a date"),
   ticketLink: z.union([z.string().url("Must be a full URL starting with https://"), z.literal("")]),
   soldOut: z.boolean().default(false),
 })

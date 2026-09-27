@@ -5,6 +5,7 @@ import Link from "next/link"
 import { getAllEvents } from "@/lib/firebase/events"
 import { getAllArtists } from "@/lib/firebase/artists"
 import type { Event } from "@/types"
+import { parseEventDate, isPast } from "@/lib/utils/date"
 import {
   IconCalendarEvent,
   IconMicrophone2,
@@ -29,12 +30,17 @@ function findIssues(events: Event[]): Issue[] {
   for (const event of events) {
     const cities = event.cities ?? []
     const openCities = cities.filter((c) => !c.soldOut)
+    const dates = cities.map((c) => parseEventDate(c.date))
     if (!event.heroImage) issues.push({ event, problem: "No hero image" })
     if (cities.some((c) => !c.ticketLink)) issues.push({ event, problem: "A city has no ticket link" })
     if (cities.length > 0 && openCities.length === 0 && event.status !== "sold-out")
       issues.push({ event, problem: "Every city is sold out, but status isn't “Sold out”" })
     if (event.status === "sold-out" && openCities.length > 0)
       issues.push({ event, problem: "Status is “Sold out”, but some cities still have tickets" })
+    if (dates.some((d) => d === null))
+      issues.push({ event, problem: "A city date isn't a full date — re-pick it" })
+    else if (dates.length > 0 && dates.every((d) => d && isPast(d)))
+      issues.push({ event, problem: "Every date has passed — update or delete it" })
   }
   return issues
 }
@@ -128,7 +134,7 @@ export default function AdminDashboardPage() {
         ) : issues.length === 0 ? (
           <p className="mt-3 flex items-center gap-2 text-sm text-white/55">
             <IconCircleCheck size={16} className="text-cyan-300" />
-            Every event has an image, ticket links and a status that matches its cities.
+            Every event has an image, ticket links, upcoming dates and a status that matches its cities.
           </p>
         ) : (
           <ul className="mt-4 divide-y divide-white/8">

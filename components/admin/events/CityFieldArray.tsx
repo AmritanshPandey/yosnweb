@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import type { EventFormValues } from "@/lib/validations/event-schema"
+import { toDateInputValue, fromDateInputValue } from "@/lib/utils/date"
 
 export function CityFieldArray() {
   const {
@@ -76,10 +77,34 @@ export function CityFieldArray() {
               </div>
 
               <div className="space-y-1.5">
-                <Label>Date</Label>
-                <Input
-                  {...register(`cities.${index}.date`)}
-                  placeholder="Sat, 24 Oct 2026"
+                <Label htmlFor={`city-date-${index}`}>Date</Label>
+                <Controller
+                  control={control}
+                  name={`cities.${index}.date`}
+                  render={({ field: f }) => {
+                    const inputValue = toDateInputValue(f.value ?? "")
+                    const unreadable = !!f.value && !inputValue
+                    return (
+                      <>
+                        {/* Saved as display text ("Sat, 24 Oct 2026"), which is what the site shows */}
+                        <Input
+                          id={`city-date-${index}`}
+                          type="date"
+                          value={inputValue}
+                          onChange={(e) => f.onChange(fromDateInputValue(e.target.value))}
+                          onBlur={f.onBlur}
+                          className="[color-scheme:dark]"
+                        />
+                        {unreadable ? (
+                          <p className="text-xs text-amber-300/80">
+                            Currently “{f.value}” — pick a date to replace it.
+                          </p>
+                        ) : (
+                          f.value && <p className="font-mono text-xs text-white/40">Shows as {f.value}</p>
+                        )}
+                      </>
+                    )
+                  }}
                 />
                 {cityErrors?.date && (
                   <p className="text-xs text-red-400">{cityErrors.date.message}</p>

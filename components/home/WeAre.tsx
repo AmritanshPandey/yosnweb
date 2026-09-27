@@ -134,8 +134,6 @@ export function WeAre() {
   }, [isPaused])
 
   useEffect(() => {
-    setLiveTicketCount(getLiveTicketCount())
-
     const interval = window.setInterval(() => {
       setLiveTicketCount(getLiveTicketCount())
     }, 60_000)

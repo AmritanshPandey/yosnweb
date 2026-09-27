@@ -15,7 +15,6 @@ import {
   IconMoodSmile,
   IconSparkles,
 } from "@tabler/icons-react"
-import { House } from "lucide-react"
 
 const stats = [
   { value: 250, label: "Events", icon: IconCalendarEvent },
