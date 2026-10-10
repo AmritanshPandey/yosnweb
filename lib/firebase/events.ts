@@ -4,6 +4,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
   getDoc,
   getDocs,
   query,
@@ -88,8 +89,12 @@ export type CreateEventInput = Omit<Event, "id" | "createdAt">
 
 export async function createEvent(input: CreateEventInput): Promise<string> {
   const db = getClientDb()
+  // Strip undefined — Firestore rejects undefined field values
+  const data = Object.fromEntries(
+    Object.entries(input).filter(([, v]) => v !== undefined)
+  )
   const docRef = await addDoc(collection(db, COLLECTION), {
-    ...input,
+    ...data,
     createdAt: serverTimestamp(),
   })
   return docRef.id
@@ -97,7 +102,12 @@ export async function createEvent(input: CreateEventInput): Promise<string> {
 
 export async function updateEvent(id: string, input: Partial<CreateEventInput>): Promise<void> {
   const db = getClientDb()
-  await updateDoc(doc(db, COLLECTION, id), input)
+  // undefined means the field no longer applies (e.g. heroImageBg once an image
+  // is back to "cover") — remove it rather than letting Firestore reject the write
+  const data = Object.fromEntries(
+    Object.entries(input).map(([k, v]) => [k, v === undefined ? deleteField() : v])
+  )
+  await updateDoc(doc(db, COLLECTION, id), data)
 }
 
 export async function deleteEvent(id: string): Promise<void> {
