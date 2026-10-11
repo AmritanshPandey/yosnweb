@@ -272,7 +272,8 @@ function EventSkeletons() {
   )
 }
 
-export function PastEvents() {
+// On its own page (/events) the section heading is the page's main heading.
+export function PastEvents({ headingLevel = "h2" }: { headingLevel?: "h1" | "h2" }) {
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [showAllPhotos, setShowAllPhotos] = useState(false)
@@ -309,6 +310,7 @@ export function PastEvents() {
           <div>
             <Reveal>
               <SplitHeading
+                as={headingLevel}
                 text="UPCOMING EVENTS"
                 className="heading-fun text-4xl sm:text-6xl md:text-8xl"
               />

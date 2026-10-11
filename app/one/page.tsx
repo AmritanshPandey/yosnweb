@@ -92,14 +92,16 @@ export default function Page() {
               }}
               transition={{ duration: 0.8 }}
             >
-              <Image
-                src="/assets/one/one.png"
-                alt="One Night Event Logo"
-                width={480}
-                height={480}
-                className="h-72 md:h-120 w-auto"
-                priority
-              />
+              <h1>
+                <Image
+                  src="/assets/one/one.png"
+                  alt="One Night"
+                  width={480}
+                  height={480}
+                  className="h-72 md:h-120 w-auto"
+                  priority
+                />
+              </h1>
             </motion.div>
 
             {/* Subtitle */}
