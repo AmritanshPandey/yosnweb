@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { IconArrowUpRight, IconStar } from "@tabler/icons-react"
 import { getAllEvents } from "@/lib/firebase/events"
+import { parseEventDate, isPast } from "@/lib/utils/date"
 import type { Event } from "@/types"
 import { STATUS_LABELS, STATUS_COLORS, CATEGORY_LABELS } from "@/types"
 import { Reveal } from "@/components/shared/Reveal"
@@ -61,6 +62,13 @@ const GALLERY: { src: string; highlight?: true }[] = [
 // ────────────────────────────────────────────────────────────────────────────
 
 const MOBILE_GALLERY_LIMIT = 8
+
+// An event has ended once every city date has passed. Events with any date
+// that can't be read stay listed rather than vanishing by mistake.
+function hasEnded(event: Event) {
+  const dates = (event.cities ?? []).map((c) => parseEventDate(c.date))
+  return dates.length > 0 && dates.every((d) => d !== null && isPast(d))
+}
 
 function getTicketLink(event: Event) {
   return (
@@ -272,7 +280,8 @@ export function PastEvents() {
 
   useEffect(() => {
     getAllEvents()
-      .then((data) => {
+      .then((all) => {
+        const data = all.filter((e) => !hasEnded(e))
         data.sort((a, b) => {
           if (a.featured && !b.featured) return -1
           if (!a.featured && b.featured) return 1
